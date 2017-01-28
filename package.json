@@ -1,0 +1,11 @@
+{
+  "name": "visitor-log",
+  "version": "0.1.0",
+  "description": "Records visitors to the site and allows them to post messages",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aaron L. Zeng <a2z@mit.edu> (https://github.com/bcc32/)",
+  "license": "MIT"
+}
