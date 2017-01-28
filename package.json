@@ -7,5 +7,25 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aaron L. Zeng <a2z@mit.edu> (https://github.com/bcc32/)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.16.0",
+    "commander": "^2.9.0",
+    "express": "^4.14.0",
+    "level": "^1.5.0",
+    "morgan": "^1.7.0",
+    "pug": "^2.0.0-beta9"
+  },
+  "devDependencies": {
+    "eslint": "^3.14.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcc32/visitor-log.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcc32/visitor-log/issues"
+  },
+  "homepage": "https://github.com/bcc32/visitor-log#readme"
 }
