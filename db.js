@@ -1,7 +1,7 @@
 const Promise = require('bluebird');
 const level = require('level');
 
-const db = level(program.dbpath, {
+const db = level(global.program.dbpath, {
   keyEncoding: 'binary',
   valueEncoding: 'json',
 });
