@@ -39,12 +39,14 @@ function get(id) {
   return db.getAsync(idToKey(id));
 }
 
-function getAll() {
+function getAll({ limit, reverse }) {
   return new Promise((resolve, reject) => {
     const messages = [];
     const rs = db.createValueStream({
       gte: keyLB,
       lt: keyUB,
+      limit,
+      reverse,
     });
     rs.on('data', (data) => messages.push(data))
       .on('end', () => resolve(messages))

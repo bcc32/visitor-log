@@ -26,7 +26,7 @@ app.use(morgan(isProduction ? 'common' : 'dev'));
 app.use(express.static('./public'));
 
 app.get('/', (req, res) => {
-  msg.getAll()
+  msg.getAll({ limit: 20, reverse: true })
     .then((messages) => {
       messages.forEach((m) => {
         m.timestamp = moment(m.timestamp).fromNow();
