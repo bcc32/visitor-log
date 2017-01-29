@@ -16,7 +16,7 @@ html(lang='en')
       tbody
         for msg in messages
           tr
-            td.min-width= msg.timestamp
+            td.min-width(title=msg.timestamp)= msg.time
             td.max-width= msg.message
         else
           tr: td.center(colspan=2) (no messages)

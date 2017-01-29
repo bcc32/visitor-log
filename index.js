@@ -28,9 +28,7 @@ app.use(express.static('./public'));
 app.get('/', (req, res) => {
   msg.getAll({ limit: 20, reverse: true })
     .then((messages) => {
-      messages.forEach((m) => {
-        m.timestamp = moment(m.timestamp).fromNow();
-      });
+      messages.forEach((m) => m.time = moment(m.timestamp).fromNow());
       res.render('index', { messages });
     })
     .catch((e) => {
