@@ -1,6 +1,5 @@
 // static assets
 require('./style.css');
-const $ = require('jquery');
 
 $(() => {
   const $messageForm = $('#message-form');

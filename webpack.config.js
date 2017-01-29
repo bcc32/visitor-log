@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = {
   entry: './client/main.js',
   output: {
@@ -16,4 +18,10 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+    }),
+  ],
 };
