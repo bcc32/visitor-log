@@ -1,4 +1,3 @@
-// const bodyParser = require('body-parser');
 const express = require('express');
 const morgan = require('morgan');
 const program = require('commander');
@@ -28,7 +27,8 @@ app.get('/', (req, res) => {
     .then((messages) => {
       res.render('index', { messages });
     })
-    .catch(() => {
+    .catch((e) => {
+      console.error(e);
       res.status(500).end();
     });
 });

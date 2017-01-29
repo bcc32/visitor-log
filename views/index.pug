@@ -1,9 +1,14 @@
 doctype html
 html
   head
+    script(type='text/javascript', src='js/jquery.js')
+    script(type='text/javascript', src='js/main.js')
     link(rel='stylesheet', href='css/style.css')
   body
     h1 Welcome
+
+    p: form#message-form
+      input#message
 
     p: table#messages
       th Time
