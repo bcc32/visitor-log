@@ -11,4 +11,6 @@ $(function() {
         location.reload();
       });
   });
+
+  $('#message').focus();
 });
