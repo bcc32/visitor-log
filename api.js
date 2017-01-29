@@ -21,7 +21,7 @@ router.get('/messages', (req, res) => {
 
 router.post('/messages', (req, res) => {
   const [id, key] = msg.makeIdAndKey();
-  const message = req.body.message;
+  const message = req.body.message.trim();
   if (message === '') {
     res.status(400).send('empty message');
     return;
