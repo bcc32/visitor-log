@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
+    "build:production": "./node_modules/.bin/webpack -p",
     "lint": "./node_modules/.bin/eslint --fix .",
-    "postinstall": "npm run build",
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
