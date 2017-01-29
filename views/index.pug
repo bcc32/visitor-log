@@ -4,12 +4,13 @@ html
     link(rel='stylesheet', href='css/style.css')
   body
     h1 Welcome
-    table
-      th ID
-      th Timestamp
+
+    p: table#messages
+      th Time
       th Message
       for msg in messages
         tr
-          td= msg.id
           td= msg.timestamp
           td= msg.message
+      else
+        tr: td.center(colspan=2) (no messages)
