@@ -39,7 +39,8 @@ function get(id) {
   return db.getAsync(idToKey(id));
 }
 
-function getAll({ limit, reverse }) {
+function getAll(opts) {
+  const { limit, reverse } = opts || {};
   return new Promise((resolve, reject) => {
     const messages = [];
     const rs = db.createValueStream({
