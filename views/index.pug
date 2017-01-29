@@ -21,5 +21,7 @@ html(lang='en')
           tr
             td.min-width(title=msg.timestamp)= msg.time
             td.max-width= msg.message
-        else
-          tr: td.center(colspan=2) (no messages)
+      tfoot
+        - const word = 'message' + (messages.length === 1 ? '' : 's');
+        - const number = messages.length ? String(messages.length) : 'no'
+        tr: td.center(colspan=2)= `(${number} ${word})`
