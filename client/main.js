@@ -3,12 +3,15 @@ require('./style.css');
 const $ = require('jquery');
 
 $(() => {
-  $('#message-form').submit((e) => {
+  const $messageForm = $('#message-form');
+  const $message = $('#message');
+
+  $messageForm.submit((e) => {
     e.preventDefault();
-    const message = $('#message').val();
+    const message = $message.val();
     $.post('/api/messages', { message })
       .always(() => location.reload());
   });
 
-  $('#message').focus();
+  $message.focus();
 });
