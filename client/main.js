@@ -1,5 +1,5 @@
 // static assets
-require('./style.css');
+require('bootstrap-loader');
 
 $(() => {
   const $messageForm = $('#message-form');
