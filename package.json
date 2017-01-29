@@ -4,6 +4,9 @@
   "description": "Records visitors to the site and allows them to post messages",
   "main": "index.js",
   "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "postinstall": "npm build",
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aaron L. Zeng <a2z@mit.edu> (https://github.com/bcc32/)",
