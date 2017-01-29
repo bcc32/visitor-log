@@ -1,15 +1,13 @@
 // static assets
 require('./style.css');
-var $ = require('jquery');
+const $ = require('jquery');
 
-$(function() {
-  $('#message-form').submit(function postMessage(e) {
+$(() => {
+  $('#message-form').submit((e) => {
     e.preventDefault();
-    var message = $('#message').val();
-    $.post('/api/messages', { message: message })
-      .always(function() {
-        location.reload();
-      });
+    const message = $('#message').val();
+    $.post('/api/messages', { message })
+      .always(() => location.reload());
   });
 
   $('#message').focus();
