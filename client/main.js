@@ -1,3 +1,7 @@
+// static assets
+require('./style.css');
+var $ = require('jquery');
+
 $(function() {
   $('#message-form').submit(function postMessage(e) {
     e.preventDefault();
