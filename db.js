@@ -1,8 +1,7 @@
 const Promise = require('bluebird');
 const level = require('level');
 
-// TODO make this configurable
-const db = level('./data', {
+const db = level(program.dbpath, {
   keyEncoding: 'binary',
   valueEncoding: 'json',
 });

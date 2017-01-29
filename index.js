@@ -1,19 +1,21 @@
 const express = require('express');
 const morgan = require('morgan');
 const moment = require('moment');
-const program = require('commander');
-
-const api = require('./api');
-const msg = require('./msg');
+global.program = require('commander');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 program
   .version('0.1.0')
-  .option('-p, --port', 'Specify port number')
+  .option('-p, --port', 'specify port number (default: 80/8080 in prod/dev)')
+  .option('-d, --dbpath', 'specify data directory (default: ./data)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
+program.dbpath = program.dbpath || './data';
+
+const api = require('./api');
+const msg = require('./msg');
 
 const app = express();
 
