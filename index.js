@@ -7,8 +7,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 global.program
   .version('0.1.0')
-  .option('-p, --port', 'specify port number (default: 80/8080 in prod/dev)')
-  .option('-d, --dbpath', 'specify data directory (default: ./data)')
+  .option('-p, --port <n>', 'specify port number (default: 80/8080)')
+  .option('-d, --dbpath <path>', 'specify data directory (default: ./data)')
   .parse(process.argv);
 
 global.program.port = global.program.port || (isProduction ? 80 : 8080);
