@@ -1,13 +1,12 @@
-const Promise = require('bluebird');
 // const bodyParser = require('body-parser');
 const express = require('express');
-const level = require('level');
 const morgan = require('morgan');
 const program = require('commander');
 
-const isProduction = process.env.NODE_ENV === 'production';
+const api = require('./api');
+const msg = require('./msg');
 
-Promise.promisifyAll(level.prototype);
+const isProduction = process.env.NODE_ENV === 'production';
 
 program
   .version('0.1.0')
@@ -22,8 +21,22 @@ app.set('view engine', 'pug');
 
 app.use(morgan(isProduction ? 'common' : 'dev'));
 
+app.use(express.static('./public'));
+
 app.get('/', (req, res) => {
-  res.render('index');
+  msg.getAll()
+    .then((messages) => {
+      res.render('index', { messages });
+    })
+    .catch(() => {
+      res.status(500).end();
+    });
 });
 
-app.listen(program.port);
+app.use('/api', api);
+
+// Need to wait for DB to load the last key
+msg.lastKeyLoaded.then(() => {
+  console.log('Listening on port %d', program.port);
+  app.listen(program.port);
+});

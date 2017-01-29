@@ -1,5 +1,15 @@
 doctype html
 html
+  head
+    link(rel='stylesheet', href='css/style.css')
   body
     h1 Welcome
-    // TODO
+    table
+      th ID
+      th Timestamp
+      th Message
+      for msg in messages
+        tr
+          td= msg.id
+          td= msg.timestamp
+          td= msg.message
