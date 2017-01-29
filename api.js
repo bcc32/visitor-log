@@ -22,6 +22,10 @@ router.get('/messages', (req, res) => {
 router.post('/messages', (req, res) => {
   const [id, key] = msg.makeIdAndKey();
   const message = req.body.message;
+  if (message === '') {
+    res.status(400).send('empty message');
+    return;
+  }
   const ip = req.ip;
   const timestamp = new Date();
 
