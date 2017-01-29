@@ -8,10 +8,10 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.css$/, loader: 'style!css' },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        loader: 'babel',
         query: {
           presets: ['es2015'],
         },
