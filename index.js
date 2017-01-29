@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const moment = require('moment');
 const program = require('commander');
 
 const api = require('./api');
@@ -25,6 +26,9 @@ app.use(express.static('./public'));
 app.get('/', (req, res) => {
   msg.getAll()
     .then((messages) => {
+      messages.forEach((m) => {
+        m.timestamp = moment(m.timestamp).fromNow();
+      });
       res.render('index', { messages });
     })
     .catch((e) => {
