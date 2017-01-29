@@ -11,12 +11,12 @@ html(lang='en')
 
     p: table#messages.table.table-bordered.table-hover.table-striped
       thead
-        th Time
-        th Message
+        th.min-width Time
+        th.max-width Message
       tbody
         for msg in messages
           tr
-            td= msg.timestamp
-            td= msg.message
+            td.min-width= msg.timestamp
+            td.max-width= msg.message
         else
           tr: td.center(colspan=2) (no messages)

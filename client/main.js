@@ -1,4 +1,5 @@
 // static assets
+require('./style.css');
 require('bootstrap-loader');
 
 $(() => {
