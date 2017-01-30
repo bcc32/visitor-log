@@ -23,6 +23,7 @@ app.set('view engine', 'pug');
 
 app.use(morgan(isProduction ? 'common' : 'dev'));
 
+app.use(express.static('./dist'));
 app.use(express.static('./public'));
 
 app.get('/', (req, res) => {

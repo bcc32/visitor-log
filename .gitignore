@@ -38,3 +38,6 @@ jspm_packages
 
 # LevelDB data store
 data
+
+# Webpack bundle output
+dist
