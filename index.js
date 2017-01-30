@@ -5,12 +5,25 @@ const program = require('commander');
 
 global.program = program;
 
+function parseIntExn(input) {
+  const n = parseInt(input, 10);
+  if (!Number.isInteger(n)) {
+    throw new Error(`must be an integer: ${input}`);
+  } else if (!(0 <= n && n <= 65535)) {
+    throw new Error(`port number out of range: ${n}`);
+  }
+  return n;
+}
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 program
   .version('0.1.0')
-  .option('-p, --port <n>', 'specify port number (default: 80/8080)')
-  .option('-d, --dbpath <path>', 'specify data directory (default: ./data)')
+  .option('-p, --port <n>',
+          'specify port number (default: 80/8080)',
+          parseIntExn)
+  .option('-d, --dbpath <path>',
+          'specify data directory (default: ./data)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
