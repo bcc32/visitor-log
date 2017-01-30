@@ -8,19 +8,23 @@ html(lang='en')
   body.container-fluid
     h1 Welcome
 
-    p: form#message-form.form-group
-      label(for='message') Message
-      input#message.form-control
+    p: form#message-form
+      div.form-group
+        div.input-group
+          label.sr-only(for='message') Message
+          input#message.form-control(placeholder='Write something...')
+          span.input-group-btn
+            button.btn.btn-default(type='submit') Post
 
-    p: table#messages.table.table-bordered.table-hover.table-striped
+    p: table#messages.table.table-condensed.table-hover
       thead
-        th.min-width Time
         th.max-width Message
+        th.min-width Time
       tbody
         for msg in messages
           tr
-            td.min-width(title=msg.timestamp)= msg.time
             td.max-width= msg.message
+            td.min-width(title=msg.timestamp)= msg.time
       tfoot
         - const word = 'message' + (messages.length === 1 ? '' : 's');
         - const number = messages.length ? String(messages.length) : 'no'

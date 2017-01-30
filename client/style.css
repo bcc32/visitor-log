@@ -1,3 +1,7 @@
+.center {
+    text-align: center;
+}
+
 .min-width {
     white-space: nowrap;
 }
