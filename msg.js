@@ -1,3 +1,5 @@
+const Promise = require('bluebird');
+
 const db = require('./db');
 
 function get(id) {
@@ -32,10 +34,12 @@ function save({ message, ip, timestamp }) {
   const sql = 'INSERT INTO messages (message, ip, timestamp) VALUES (?, ?, ?)';
   const values = [message, ip, timestamp.toISOString()];
 
-  return db.runAsync(sql, values)
-          .then(function () {
-            return this.lastID;
-          });
+  return new Promise((resolve, reject) => {
+    db.run(sql, values, function (err) {
+      if (err) return reject(err);
+      resolve(this.lastID);
+    });
+  });
 }
 
 module.exports = {
