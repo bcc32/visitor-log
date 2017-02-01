@@ -35,6 +35,7 @@ const msg = require('./msg');
 const app = express();
 
 app.set('view engine', 'pug');
+app.locals.basedir = __dirname;
 
 app.use(morgan(isProduction ? 'common' : 'dev'));
 
