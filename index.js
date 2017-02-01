@@ -5,7 +5,7 @@ const program = require('commander');
 
 global.program = program;
 
-function parseIntExn(input) {
+function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
   if (!Number.isInteger(n)) {
     throw new Error(`must be an integer: ${input}`);
@@ -21,7 +21,7 @@ program
   .version('0.1.0')
   .option('-p, --port <n>',
           'specify port number (default: 80/8080)',
-          parseIntExn)
+          parsePortNumberExn)
   .option('-d, --dbpath <path>',
           'specify database file (default: ./data/data.db)')
   .parse(process.argv);
