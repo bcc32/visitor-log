@@ -23,11 +23,11 @@ program
           'specify port number (default: 80/8080)',
           parsePortNumberExn)
   .option('-d, --dbpath <path>',
-          'specify database file (default: ./data/data.db)')
+          'specify database file (default: ./data.db)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
-program.dbpath = program.dbpath || './data/data.db';
+program.dbpath = program.dbpath || './data.db';
 
 const api = require('./api');
 const msg = require('./msg');
