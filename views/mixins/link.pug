@@ -1,0 +1,10 @@
+mixin link(href)
+  a(href=href).link&attributes(attributes)
+    if block
+      block
+    else
+      href
+
+mixin github-link(short_form)
+  +link('https://github.com/' + short_form)
+    code= short_form

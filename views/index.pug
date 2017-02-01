@@ -1,82 +1,30 @@
-doctype html
-html(lang='en')
-  head
-    // Bootstrap mobile styles
-    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
-    script(type='text/javascript', src='bundle.js')
-    // Adobe TypeKit
-    script.
-      (function(d) {
-        var config = {
-          kitId: 'ehu2vej',
-          scriptTimeout: 3000,
-          async: true
-        },
-        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-      })(document);
+extends layout.pug
 
-  body.container-fluid
-    h1 Welcome
+block content
+  h1 Welcome
 
-    p: form#message-form
-      div.form-group
-        div.input-group
-          label.sr-only(for='message') Message
-          input#message.form-control(placeholder='Write something...')
-          span.input-group-btn
-            button.btn.btn-default(type='submit') Post
+  p: form#message-form
+    div.form-group
+      div.input-group
+        label.sr-only(for='message') Message
+        input#message.form-control(placeholder='Write something...')
+        span.input-group-btn
+          button.btn.btn-default(type='submit') Post
 
-    p: table#messages.table.table-condensed.table-hover
-      thead
-        th.max-width Message
-        th.min-width Time
-      tbody
-        for msg in messages
-          tr
-            td.max-width= msg.message
-            td.min-width(title=msg.timestamp)= msg.time
-      tfoot
-        - const word = 'message' + (messages.length === 1 ? '' : 's');
-        - const number = messages.length ? String(messages.length) : 'no'
-        tr: td.center(colspan=2)= `(${number} ${word})`
+  p: table#messages.table.table-condensed.table-hover
+    thead
+      th.max-width Message
+      th.min-width Time
+    tbody
+      for msg in messages
+        tr
+          td.max-width= msg.message
+          td.min-width(title=msg.timestamp)= msg.time
+    tfoot
+      - const word = 'message' + (messages.length === 1 ? '' : 's');
+      - const number = messages.length ? String(messages.length) : 'no'
+      tr: td.center(colspan=2) (#{number} #{word})
 
-    h2#about-me About me
+  h2#about-me About me
 
-    p.
-      My name is Aaron Zeng. I am a junior studying Electrical Engineering and
-      Computer Science at the Massachusetts Institute of Technology (MIT).
-
-    p
-      | Sometimes I write code. This is some code I wrote during summer &apos;16 (
-      a(href='https://github.com/janestreet/ecaml/')
-        code janestreet/ecaml
-      |).
-
-    pre
-      code.ocaml
-        include /public/emacs.ml
-
-    pre
-      code.cpp
-        include /public/stub.c
-
-    p
-      | I enjoy
-      span.fraktur &nbsp;Calligraphy&nbsp;
-      | and collecting things, viz., slide rules, knives, and watches.
-
-    footer
-      h3#contact-info Contact Info
-      ul
-        li
-          | Email:&nbsp;
-          script.
-            document.write('<'+'a'+' '+'h'+'r'+'e'+'f'+'='+"'"+'m'+'a'+'&'+'#'+'1'+'0'+'5'+';'+'l'+'t'+'o'+'&'+'#'+'5'+'8'+';'+
-            '%'+'6'+'D'+'e'+'&'+'#'+'6'+'4'+';'+'b'+'&'+'#'+'9'+'9'+';'+'%'+'6'+'3'+'&'+'#'+'5'+'1'+';'+'&'+'#'+
-            '5'+'0'+';'+'&'+'#'+'4'+'6'+';'+'c'+'%'+'6'+'F'+'%'+'6'+'D'+"'"+'>'+'m'+'e'+'&'+'#'+'6'+'4'+';'+'b'+
-            'c'+'c'+'3'+'2'+'&'+'#'+'4'+'6'+';'+'c'+'o'+'m'+'<'+'/'+'a'+'>');
-          noscript [Turn on JavaScript to see the email address]
-        li: a(href='https://github.com/bcc32/') GitHub
-        li: a(href='https://www.linkedin.com/in/zenga/') LinkedIn
-      .jp 吾輩は猫である
-      | Copyright &copy; 2017 Aaron L. Zeng
+  include includes/about-me.pug

@@ -1,0 +1,23 @@
+include ../mixins/link.pug
+
+-
+  const links = {
+    GitHub: 'https://github.com/bcc32/',
+    LinkedIn: 'https://www.linkedin.com/in/zenga/',
+  };
+
+footer
+  h3#contact-info Contact Info
+  ul
+    li
+      | Email:&nbsp;
+      script.
+        document.write('<'+'a'+' '+'h'+'r'+'e'+'f'+'='+"'"+'m'+'a'+'&'+'#'+'1'+'0'+'5'+';'+'l'+'t'+'o'+'&'+'#'+'5'+'8'+';'+
+        '%'+'6'+'D'+'e'+'&'+'#'+'6'+'4'+';'+'b'+'&'+'#'+'9'+'9'+';'+'%'+'6'+'3'+'&'+'#'+'5'+'1'+';'+'&'+'#'+
+        '5'+'0'+';'+'&'+'#'+'4'+'6'+';'+'c'+'%'+'6'+'F'+'%'+'6'+'D'+"'"+'>'+'m'+'e'+'&'+'#'+'6'+'4'+';'+'b'+
+        'c'+'c'+'3'+'2'+'&'+'#'+'4'+'6'+';'+'c'+'o'+'m'+'<'+'/'+'a'+'>');
+      noscript [Turn on JavaScript to see the email address]
+    for href, label in links
+      li: +link(href)= label
+  .jp 吾輩は猫である
+  | Copyright &copy; 2017 Aaron L. Zeng
