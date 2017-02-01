@@ -20,4 +20,14 @@ $(() => {
   });
 
   $message.focus();
+
+  $('a.link').click(function () {
+    const $elt = $(this);
+    const data = {
+      path: location.pathname,
+      label: $elt.text(),
+      href: $elt.attr('href'),
+    };
+    $.post('/api/link-clicks', data);
+  });
 });

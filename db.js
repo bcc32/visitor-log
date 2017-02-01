@@ -25,6 +25,16 @@ messages_timestamp ON messages (
   timestamp
 );
 
+CREATE TABLE IF NOT EXISTS
+link_clicks (
+  id INTEGER PRIMARY KEY,
+  timestamp TEXT,
+  ip TEXT,
+  path TEXT,
+  label TEXT,
+  href TEXT
+);
+
 `;
 
 db.serialize(() => {

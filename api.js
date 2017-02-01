@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const db = require('./db');
 const msg = require('./msg');
 
 const router = express.Router();
@@ -53,6 +54,20 @@ router.get('/messages/:id', (req, res) => {
       res.status(200).json(data);
     })
     .catch(() => {
+      res.status(500).end();
+    });
+});
+
+router.post('/link-clicks', (req, res) => {
+  const { path, label, href } = req.body;
+  const ip = req.ip;
+  const timestamp = new Date().toISOString();
+  const sql = 'INSERT INTO link_clicks (timestamp, ip, path, label, href) VALUES (?, ?, ?, ?, ?)';
+  const values = [timestamp, ip, path, label, href];
+  db.runAsync(sql, values)
+    .then(() => res.status(201).end())
+    .catch((e) => {
+      console.error(e);
       res.status(500).end();
     });
 });
