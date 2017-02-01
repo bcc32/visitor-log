@@ -39,7 +39,7 @@ router.post('/messages', (req, res) => {
   msg.save(data)
     .then((id) => {
       data.id = id;
-      res.status(200).json(data);
+      res.status(201).json(data);
     })
     .catch((e) => {
       console.error('Error saving message: ', e);
