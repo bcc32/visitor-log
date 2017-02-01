@@ -23,11 +23,11 @@ program
           'specify port number (default: 80/8080)',
           parseIntExn)
   .option('-d, --dbpath <path>',
-          'specify data directory (default: ./data)')
+          'specify database file (default: ./data/data.db)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
-program.dbpath = program.dbpath || './data';
+program.dbpath = program.dbpath || './data/data.db';
 
 const api = require('./api');
 const msg = require('./msg');
@@ -55,8 +55,5 @@ app.get('/', (req, res) => {
 
 app.use('/api', api);
 
-// Need to wait for DB to load the last key
-msg.lastKeyLoaded.then(() => {
-  console.log('Listening on port %d', program.port);
-  app.listen(program.port);
-});
+console.log('Listening on port %d', program.port);
+app.listen(program.port);

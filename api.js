@@ -1,7 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
-const db = require('./db');
 const msg = require('./msg');
 
 const router = express.Router();
@@ -20,7 +19,6 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-  const [id, key] = msg.makeIdAndKey();
   const message = req.body.message.trim();
   if (message === '') {
     res.status(400).send('empty message');
@@ -29,14 +27,15 @@ router.post('/messages', (req, res) => {
   const ip = req.ip;
   const timestamp = new Date();
 
-  const data = { id, message, ip, timestamp };
+  const data = { message, ip, timestamp };
 
-  // TODO this should probably be in `msg`
-  db.putAsync(key, data)
-    .then(() => {
+  msg.save(data)
+    .then((id) => {
+      data.id = id;
       res.status(200).json(data);
     })
-    .catch(() => {
+    .catch((e) => {
+      console.error('Error saving message: ', e);
       res.status(500).end();
     });
 });
