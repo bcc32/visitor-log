@@ -16,6 +16,7 @@ function parsePortNumberExn(input) {
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
+global.isProduction = isProduction;
 
 program
   .version('0.1.0')
@@ -24,12 +25,16 @@ program
           parsePortNumberExn)
   .option('-d, --dbpath <path>',
           'specify database file (default: ./data.db)')
+  .option('-l, --log-dir <dir>',
+          'specify log directory (default: ./logs)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
 program.dbpath = program.dbpath || './data.db';
+program.logDir = program.logDir || './logs';
 
 const api = require('./api');
+const log = require('./log');
 const msg = require('./msg');
 
 const app = express();
@@ -37,7 +42,7 @@ const app = express();
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
 
-app.use(morgan(isProduction ? 'common' : 'dev'));
+app.use(morgan('short', { stream: log.stream }));
 
 app.use(express.static('./dist'));
 app.use(express.static('./public'));
@@ -49,12 +54,12 @@ app.get('/', (req, res) => {
       res.render('index', { messages });
     })
     .catch((e) => {
-      console.error(e);
+      log.error(e);
       res.status(500).end();
     });
 });
 
 app.use('/api', api);
 
-console.log('Listening on port %d', program.port);
 app.listen(program.port);
+log.info('Server started, listening on port %d', program.port);

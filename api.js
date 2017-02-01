@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 
 const db = require('./db');
+const log = require('./log');
 const msg = require('./msg');
 
 const router = express.Router();
@@ -14,7 +15,8 @@ router.get('/messages', (req, res) => {
     .then((messages) => {
       res.status(200).json(messages);
     })
-    .catch(() => {
+    .catch((e) => {
+      log.error(e);
       res.status(500).end();
     });
 });
@@ -42,7 +44,7 @@ router.post('/messages', (req, res) => {
       res.status(201).json(data);
     })
     .catch((e) => {
-      console.error('Error saving message: ', e);
+      log.error(e);
       res.status(500).end();
     });
 });
@@ -53,7 +55,8 @@ router.get('/messages/:id', (req, res) => {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(() => {
+    .catch((e) => {
+      log.error(e);
       res.status(500).end();
     });
 });
@@ -67,7 +70,7 @@ router.post('/link-clicks', (req, res) => {
   db.runAsync(sql, values)
     .then(() => res.status(201).end())
     .catch((e) => {
-      console.error(e);
+      log.error(e);
       res.status(500).end();
     });
 });

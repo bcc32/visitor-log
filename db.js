@@ -40,7 +40,7 @@ link_clicks (
 db.serialize(() => {
   db.execAsync(schema)
     .catch((e) => {
-      console.error('Error initializing database: ', e);
+      log.error('Error initializing database: ', e);
       process.exit(1);
     });
 });
