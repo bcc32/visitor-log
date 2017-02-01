@@ -19,11 +19,17 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
+  if (!req.body.message) {
+    res.status(400).send('no message');
+    return;
+  }
+
   const message = req.body.message.trim();
   if (message === '') {
     res.status(400).send('empty message');
     return;
   }
+
   const ip = req.ip;
   const timestamp = new Date();
 
