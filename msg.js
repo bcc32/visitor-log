@@ -2,48 +2,61 @@ const Promise = require('bluebird');
 
 const db = require('./db');
 
-function get(id) {
+{
   const sql = 'SELECT * FROM messages WHERE id = ?';
-  return db.getAsync(sql, id);
+  const stmt = db.prepare(sql);
+
+  module.exports.get = (id) => {
+    return stmt.getAsync(id);
+  };
 }
 
-function getAll(opts) {
-  const { limit, reverse, since } = opts || {};
+{
+  const sql = (direction) => String.raw`
+    SELECT * FROM messages
+    WHERE $timestamp IS NULL OR timestamp >= $timestamp
+    ORDER BY timestamp ${direction}
+    LIMIT $limit
+  `;
+  const stmtAsc = db.prepare(sql('ASC'));
+  const stmtDesc = db.prepare(sql('DESC'));
 
-  const parts = ['SELECT * FROM messages'];
-  const values = {};
+  module.exports.getAll = (opts) => {
+    const { limit, reverse, since } = opts || {};
 
-  if (since != null) {
-    parts.push('WHERE timestamp >= $timestamp');
-    values.$timestamp = since.toISOString();
-  }
+    const values = {};
 
-  parts.push('ORDER BY timestamp ' + (reverse ? 'DESC' : 'ASC'));
+    if (since != null) {
+      values.$timestamp = since.toISOString();
+    }
 
-  if (limit != null) {
-    parts.push('LIMIT $limit');
-    values.$limit = limit;
-  }
+    const stmt = reverse ? stmtDesc : stmtAsc;
 
-  const sql = parts.join(' ');
+    values.$limit = limit || -1; // negative means no limit
 
-  return db.allAsync(sql, values);
+    return stmt.allAsync(values);
+  };
 }
 
-function save({ message, ip, timestamp }) {
-  const sql = 'INSERT INTO messages (message, ip, timestamp) VALUES (?, ?, ?)';
-  const values = [message, ip, timestamp.toISOString()];
+{
+  const sql = String.raw`
+    INSERT INTO messages (message, visitor_id, timestamp)
+    VALUES ($message, $visitor_id, $timestamp)
+  `;
+  const stmt = db.prepare(sql);
 
-  return new Promise((resolve, reject) => {
-    db.run(sql, values, function (err) {
-      if (err) return reject(err);
-      resolve(this.lastID);
+  module.exports.save = ({ message, visitor_id }) => {
+    const values = {
+      $message: message,
+      $visitor_id: visitor_id,
+      $timestamp: new Date().toISOString()
+    };
+
+    return new Promise((resolve, reject) => {
+      stmt.run(values, function (err) {
+        if (err) return reject(err);
+        resolve(this.lastID);
+      });
     });
-  });
+  };
 }
-
-module.exports = {
-  get,
-  getAll,
-  save,
-};

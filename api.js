@@ -33,10 +33,8 @@ router.post('/messages', (req, res) => {
     return;
   }
 
-  const ip = req.ip;
-  const timestamp = new Date();
-
-  const data = { message, ip, timestamp };
+  const visitor_id = req.visitor_id;
+  const data = { message, visitor_id };
 
   msg.save(data)
     .then((id) => {
@@ -63,11 +61,8 @@ router.get('/messages/:id', (req, res) => {
 
 router.post('/link-clicks', (req, res) => {
   const { path, label, href } = req.body;
-  const ip = req.ip;
-  const timestamp = new Date().toISOString();
-  const sql = 'INSERT INTO link_clicks (timestamp, ip, path, label, href) VALUES (?, ?, ?, ?, ?)';
-  const values = [timestamp, ip, path, label, href];
-  db.runAsync(sql, values)
+  const visitor_id = req.visitor_id;
+  db.recordLinkClick({ visitor_id, path, label, href })
     .then(() => res.status(201).end())
     .catch((e) => {
       log.error(e);

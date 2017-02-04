@@ -35,6 +35,7 @@ program.dbpath = program.dbpath || './data.db';
 program.logDir = program.logDir || './logs';
 
 const api = require('./api');
+const db = require('./db');
 const log = require('./log');
 const msg = require('./msg');
 
@@ -48,6 +49,17 @@ app.use(expressWinston.logger({ winstonInstance: log }));
 
 app.use(express.static('./dist'));
 app.use(express.static('./public'));
+
+app.use((req, res, next) => {
+  const ip = req.ip;
+  db.recordVisitor(ip)
+    .then((id) => { req.visitor_id = id; })
+    .then(next)
+    .catch((e) => {
+      log.error(e);
+      res.status(500).end();
+    });
+});
 
 app.get('/', (req, res) => {
   msg.getAll({ limit: 20, reverse: true })
