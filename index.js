@@ -1,3 +1,4 @@
+const compression = require('compression');
 const express = require('express');
 const expressWinston = require('express-winston');
 const moment = require('moment');
@@ -38,6 +39,7 @@ const log = require('./log');
 const msg = require('./msg');
 
 const app = express();
+app.use(compression());
 
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
