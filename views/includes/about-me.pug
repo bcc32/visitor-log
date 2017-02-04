@@ -1,5 +1,6 @@
 include ../mixins/abbrevs.pug
 include ../mixins/link.pug
+include ../mixins/snippet.pug
 
 p.
   My name is Aaron Zeng. I am a junior studying Electrical Engineering and
@@ -9,13 +10,11 @@ p.
   Sometimes I write code. This is some code I wrote during summer &apos;16
   (#[+github-link('janestreet/ecaml')]).
 
-pre
-  code.ocaml
-    include /public/emacs.ml
++snippet('ocaml')
+  include /public/emacs.ml
 
-pre
-  code.cpp
-    include /public/ecaml_stubs.c
++snippet('c')
+  include /public/ecaml_stubs.c
 
 p.
   I enjoy #[span.fraktur Calligraphy] and collecting things, viz., slide rules,
