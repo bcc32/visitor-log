@@ -1,0 +1,9 @@
+{
+    "uid": "visitor-log",
+    "append": true,
+    "watch": false,
+    "script": "index.js",
+    "env": {
+        "NODE_ENV": "production"
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "uid": "visitor-log",
+    "append": true,
+    "watch": true,
+    "script": "index.js"
+}
