@@ -1,5 +1,5 @@
 const express = require('express');
-const morgan = require('morgan');
+const expressWinston = require('express-winston');
 const moment = require('moment');
 const program = require('commander');
 
@@ -42,7 +42,7 @@ const app = express();
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
 
-app.use(morgan('short', { stream: log.stream }));
+app.use(expressWinston.logger({ winstonInstance: log }));
 
 app.use(express.static('./dist'));
 app.use(express.static('./public'));
@@ -60,6 +60,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', api);
+
+app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
 app.listen(program.port);
 log.info('Server started, listening on port %d', program.port);
