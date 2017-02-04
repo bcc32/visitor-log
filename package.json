@@ -4,12 +4,10 @@
   "description": "Records visitors to the site and allows them to post messages",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack",
-    "build:production": "./node_modules/.bin/webpack -p",
-    "build:watch": "./node_modules/.bin/webpack -w",
-    "lint": "./node_modules/.bin/eslint --fix .",
-    "start": "forever start config/development.json",
-    "start:production": "forever start config/production.json",
+    "build": "webpack",
+    "dev": "forever start config/development.json",
+    "lint": "eslint --fix .",
+    "start": "forever start config/production.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aaron L. Zeng <a2z@mit.edu> (https://github.com/bcc32/)",

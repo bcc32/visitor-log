@@ -9,13 +9,13 @@ Records visitors to the site and allows them to post messages.
 ```sh
 npm install
 npm run build
-npm start
+npm run dev
 ```
 
 ### Production mode
 
 ```sh
 npm install
-npm run build:production
-NODE_ENV=production npm start
+npm run build -- -p
+npm start
 ```
