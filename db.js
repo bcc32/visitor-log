@@ -3,6 +3,8 @@ const dirname = require('path').dirname;
 const mkdirp = require('mkdirp');
 const sqlite3 = require('sqlite3');
 
+const log = require('./log');
+
 Promise.promisifyAll(sqlite3.Database.prototype);
 Promise.promisifyAll(sqlite3.Statement.prototype);
 
