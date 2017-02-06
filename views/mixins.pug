@@ -1,5 +1,6 @@
 mixin mit
   abbr.initialism(title='Massachusetts Institute of Technology') MIT
+
 mixin link(href)
   a(href=href).link&attributes(attributes)
     if block
@@ -10,7 +11,8 @@ mixin link(href)
 mixin github-link(short_form)
   +link('https://github.com/' + short_form)
     code= short_form
+
 mixin snippet(lang)
-  pre.line-numbers&attributes(attributes)
+  pre&attributes(attributes)
     code(class='language-'+lang)
       block
