@@ -13,43 +13,16 @@ mkdirp.sync(dirname(global.program.dbpath));
 const db = new sqlite3.Database(global.program.dbpath);
 module.exports = db;
 
-const schema = String.raw`
+const init = String.raw`
 
-PRAGMA foreign_keys=on;
-
-CREATE TABLE IF NOT EXISTS
-visitors (
-  id INTEGER PRIMARY KEY,
-  ip TEXT UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS
-messages (
-  id INTEGER PRIMARY KEY,
-  timestamp TEXT NOT NULL,
-  visitor_id INTEGER NOT NULL REFERENCES visitors (id),
-  message TEXT NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS
-messages_timestamp ON messages (
-  timestamp
-);
-
-CREATE TABLE IF NOT EXISTS
-link_clicks (
-  id INTEGER PRIMARY KEY,
-  timestamp TEXT NOT NULL,
-  visitor_id INTEGER NOT NULL REFERENCES visitors (id),
-  path TEXT NOT NULL,
-  label TEXT NOT NULL,
-  href TEXT NOT NULL
-);
+PRAGMA foreign_keys = ON;
+VACUUM;
+ANALYZE;
 
 `;
 
 db.serialize(() => {
-  db.execAsync(schema)
+  db.execAsync(init)
     .catch((e) => {
       log.error('Error initializing database: ', e);
       process.exit(1);
