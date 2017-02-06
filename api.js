@@ -11,12 +11,13 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.get('/ping', (req, res) => {
-  if (req.query.nonce == null) {
+  if (req.query.nonce == null || req.query.callback == null) {
     return res.status(400).end();
   }
-
   const nonce = ~req.query.nonce;
-  res.status(200).send({ type: 'pong', nonce });
+  const callback = req.query.callback;
+  const data = { type: 'pong', nonce };
+  res.status(200).send(`${callback}(${JSON.stringify(data)})`);
 });
 
 router.get('/messages', (req, res) => {
