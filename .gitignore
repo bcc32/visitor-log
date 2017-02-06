@@ -38,6 +38,7 @@ jspm_packages
 
 # SQLite Database
 data.db
+data.db-*
 
 # Webpack bundle output
 dist
