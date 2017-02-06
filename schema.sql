@@ -20,6 +20,10 @@ CREATE INDEX IF NOT EXISTS messages_timestamp ON messages (
   timestamp
 );
 
+CREATE INDEX IF NOT EXISTS messages_visitor_id ON messages (
+  visitor_id
+);
+
 CREATE TABLE IF NOT EXISTS link_clicks (
   id INTEGER PRIMARY KEY,
   timestamp TEXT NOT NULL,
@@ -27,4 +31,8 @@ CREATE TABLE IF NOT EXISTS link_clicks (
   path TEXT NOT NULL,
   label TEXT NOT NULL,
   href TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS link_clicks_visitor_id ON link_clicks (
+  visitor_id
 );
