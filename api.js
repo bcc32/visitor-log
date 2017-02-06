@@ -10,6 +10,15 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
+router.get('/ping', (req, res) => {
+  if (req.query.nonce == null) {
+    return res.status(400).end();
+  }
+
+  const nonce = ~req.query.nonce;
+  res.status(200).send({ type: 'pong', nonce });
+});
+
 router.get('/messages', (req, res) => {
   msg.getAll()
     .then((messages) => {
