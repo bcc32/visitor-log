@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 const dirname = require('path').dirname;
+const fs = require('fs');
 const mkdirp = require('mkdirp');
 const sqlite3 = require('sqlite3');
 
@@ -13,9 +14,14 @@ mkdirp.sync(dirname(global.program.dbpath));
 const db = new sqlite3.Database(global.program.dbpath);
 module.exports = db;
 
+const schema = fs.readFileSync('schema.sql');
+
 const init = String.raw`
 
 PRAGMA foreign_keys = ON;
+
+${ schema }
+
 VACUUM;
 ANALYZE;
 

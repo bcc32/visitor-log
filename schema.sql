@@ -4,23 +4,23 @@
  */
 PRAGMA journal_mode = WAL;
 
-CREATE TABLE visitors (
+CREATE TABLE IF NOT EXISTS visitors (
   id INTEGER PRIMARY KEY,
   ip TEXT UNIQUE NOT NULL
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
   id INTEGER PRIMARY KEY,
   timestamp TEXT NOT NULL,
   visitor_id INTEGER NOT NULL REFERENCES visitors,
   message TEXT NOT NULL
 );
 
-CREATE INDEX messages_timestamp ON messages (
+CREATE INDEX IF NOT EXISTS messages_timestamp ON messages (
   timestamp
 );
 
-CREATE TABLE link_clicks (
+CREATE TABLE IF NOT EXISTS link_clicks (
   id INTEGER PRIMARY KEY,
   timestamp TEXT NOT NULL,
   visitor_id INTEGER NOT NULL REFERENCES visitors,
