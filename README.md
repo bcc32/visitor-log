@@ -1,4 +1,6 @@
-# visitor-log
+# bcc32.com
+
+My personal website.
 
 Records visitors to the site and allows them to post messages.
 
