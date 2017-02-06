@@ -1,3 +1,9 @@
+/* Set journal_mode to WAL to enable Write-Ahead Logging.  This is done only
+ * once in the schema because this journal mode persists over multiple db
+ * connections.
+ */
+PRAGMA journal_mode = WAL;
+
 CREATE TABLE visitors (
   id INTEGER PRIMARY KEY,
   ip TEXT UNIQUE NOT NULL
