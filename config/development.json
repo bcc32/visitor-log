@@ -1,5 +1,5 @@
 {
-    "uid": "visitor-log",
+    "uid": "visitor-log-dev",
     "append": true,
     "watch": true,
     "script": "index.js"
