@@ -1,7 +1,8 @@
-const bodyParser = require('body-parser');
-const express = require('express');
+const EventEmitter = require('events');
+const bodyParser   = require('body-parser');
+const express      = require('express');
 
-const db = require('./db');
+const db  = require('./db');
 const log = require('./log');
 const msg = require('./msg');
 
@@ -12,13 +13,17 @@ router.use(bodyParser.json());
 
 router.get('/ping', (req, res) => {
   if (req.query.nonce == null || req.query.callback == null) {
-    return res.status(400).end();
+    res.status(400).end();
+    return;
   }
   const nonce = ~req.query.nonce;
   const callback = req.query.callback;
   const data = { type: 'pong', nonce };
   res.status(200).send(`${callback}(${JSON.stringify(data)})`);
 });
+
+const messageBus = new EventEmitter();
+messageBus.setMaxListeners(100);
 
 router.get('/messages', (req, res) => {
   const limit = req.query.limit;
@@ -65,11 +70,16 @@ router.post('/messages', (req, res) => {
     .then((id) => {
       data.id = id;
       res.status(201).json(data);
+      messageBus.emit('update');
     })
     .catch((e) => {
       log.error(e);
       res.status(500).end();
     });
+});
+
+router.get('/messages/update', (req, res) => {
+  messageBus.once('update', () => res.status(204).end());
 });
 
 router.get('/messages/:id', (req, res) => {

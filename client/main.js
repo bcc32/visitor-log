@@ -8,6 +8,13 @@ hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
 hljs.registerLanguage('ocaml', require('highlight.js/lib/languages/ocaml'));
 hljs.initHighlightingOnLoad();
 
+function poll() {
+  $.get('/api/messages/update')
+    .done(() => {
+      location.reload();
+    });
+}
+
 $(() => {
   const $messageForm = $('#message-form');
   const $message = $('#message');
@@ -16,10 +23,14 @@ $(() => {
     e.preventDefault();
     const message = $message.val();
     $.post('/api/messages', { message })
-      .always(() => location.reload());
+      .done(() => {
+        $message.val('');
+        location.reload();
+      });
   });
 
   $message.focus();
+  poll();
 
   $('a.link').click(function () {
     const $elt = $(this);
