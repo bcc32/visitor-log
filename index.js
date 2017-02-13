@@ -1,6 +1,9 @@
 const compression = require('compression');
 const express = require('express');
 const expressWinston = require('express-winston');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const moment = require('moment');
 const program = require('commander');
 
@@ -24,15 +27,25 @@ program
   .option('-p, --port <n>',
           'specify port number (default: 80/8080)',
           parsePortNumberExn)
+  .option('--https-port <n>',
+          'specify HTTPS port number (default: 443/8443)',
+          parsePortNumberExn)
   .option('-d, --dbpath <path>',
           'specify database file (default: ./data.db)')
   .option('-l, --log-dir <dir>',
           'specify log directory (default: ./logs)')
+  .option('-k, --keypath <path>',
+          'specify SSL private key file (default: ./server.key)')
+  .option('-c, --certpath <path>',
+          'specify SSL certificate file (default: ./server.pem)')
   .parse(process.argv);
 
 program.port = program.port || (isProduction ? 80 : 8080);
+program.httpsPort = program.httpsPort || (isProduction ? 443 : 8443);
 program.dbpath = program.dbpath || './data.db';
 program.logDir = program.logDir || './logs';
+program.keypath = program.keypath || './server.key';
+program.certpath = program.certpath || './server.pem';
 
 const api = require('./api');
 const db = require('./db');
@@ -77,5 +90,21 @@ app.use('/api', api);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
-app.listen(program.port);
-log.info('Server started, listening on port %d', program.port);
+let credentials;
+
+try {
+  const key = fs.readFileSync(program.keypath);
+  const cert = fs.readFileSync(program.certpath);
+  credentials = { key, cert };
+} catch (e) {
+  log.warn('Could not load SSL key/certificate: %s', e);
+  log.warn('Accepting HTTP connections only');
+}
+
+http.createServer(app).listen(program.port);
+log.info('HTTP server started, listening on port %d', program.port);
+
+if (credentials) {
+  https.createServer(credentials, app).listen(program.httpsPort);
+  log.info('HTTPS server started, listening on port %d', program.httpsPort);
+}
