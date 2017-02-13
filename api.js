@@ -21,7 +21,22 @@ router.get('/ping', (req, res) => {
 });
 
 router.get('/messages', (req, res) => {
-  msg.getAll()
+  const limit = req.query.limit;
+
+  let reverse = true;
+  const order = req.query.order;
+  if (order != null) {
+    if (order === 'newest') {
+      reverse = true;
+    } else if (order === 'oldest') {
+      reverse = false;
+    } else {
+      res.status(400).send('invalid order');
+      return;
+    }
+  }
+
+  msg.getAll({ limit, reverse })
     .then((messages) => {
       res.status(200).json(messages);
     })
