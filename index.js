@@ -1,11 +1,11 @@
-const compression = require('compression');
-const express = require('express');
+const compression    = require('compression');
+const express        = require('express');
 const expressWinston = require('express-winston');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
-const moment = require('moment');
-const program = global.program = require('commander');
+const fs             = require('fs');
+const http           = require('http');
+const https          = require('https');
+const moment         = require('moment');
+const program        = global.program = require('commander');
 
 function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
@@ -30,7 +30,7 @@ program
   .parse(process.argv);
 
 const api = require('./api');
-const db = require('./db');
+const db  = require('./db');
 const log = require('./log');
 const msg = require('./msg');
 
@@ -72,21 +72,16 @@ app.use('/api', api);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
-let credentials;
+http.createServer(app).listen(program.port);
+log.info('HTTP server started, listening on port %d', program.port);
 
 try {
   const key = fs.readFileSync(program.keypath);
   const cert = fs.readFileSync(program.certpath);
-  credentials = { key, cert };
+  const credentials = { key, cert };
+  https.createServer(credentials, app).listen(program.httpsPort);
+  log.info('HTTPS server started, listening on port %d', program.httpsPort);
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
-}
-
-http.createServer(app).listen(program.port);
-log.info('HTTP server started, listening on port %d', program.port);
-
-if (credentials) {
-  https.createServer(credentials, app).listen(program.httpsPort);
-  log.info('HTTPS server started, listening on port %d', program.httpsPort);
 }
