@@ -6,6 +6,7 @@ const http           = require('http');
 const https          = require('https');
 const moment         = require('moment');
 const program        = global.program = require('commander');
+const url            = require('url');
 
 function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
@@ -35,6 +36,7 @@ const log = require('./log');
 const msg = require('./msg');
 
 const app = express();
+app.use(requireHTTPS);
 app.use(compression());
 
 app.set('view engine', 'pug');
@@ -84,4 +86,18 @@ try {
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
+}
+
+function requireHTTPS(req, res, next) {
+  if (!req.secure) {
+    const target = {
+      protocol: 'https:',
+      hostname: req.hostname,
+      path: req.url,
+      port: program.httpsPort,
+    };
+    res.redirect(301, url.format(target));
+    return;
+  }
+  next();
 }
