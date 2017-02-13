@@ -7,7 +7,8 @@ const db = require('./db');
   const stmt = db.prepare(sql);
 
   module.exports.get = (id) => {
-    return stmt.getAsync(id);
+    return stmt.getAsync(id)
+      .finally(() => stmt.reset());
   };
 }
 

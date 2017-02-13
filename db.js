@@ -1,7 +1,7 @@
 const Promise = require('bluebird');
 const dirname = require('path').dirname;
-const fs = require('fs');
-const mkdirp = require('mkdirp');
+const fs      = require('fs');
+const mkdirp  = require('mkdirp');
 const sqlite3 = require('sqlite3');
 
 const log = require('./log');
@@ -47,7 +47,8 @@ db.serialize(() => {
   db.recordVisitor = (ip) => {
     return insertStmt.runAsync(ip)
       .then(() => selectStmt.getAsync(ip))
-      .get('id');
+      .get('id')
+      .finally(() => selectStmt.reset());
   };
 }
 
