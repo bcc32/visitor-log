@@ -5,9 +5,7 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const moment = require('moment');
-const program = require('commander');
-
-global.program = program;
+const program = global.program = require('commander');
 
 function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
@@ -19,33 +17,17 @@ function parsePortNumberExn(input) {
   return n;
 }
 
-const isProduction = process.env.NODE_ENV === 'production';
-global.isProduction = isProduction;
+const isProduction = global.isProduction = process.env.NODE_ENV === 'production';
 
 program
-  .version('0.1.0')
-  .option('-p, --port <n>',
-          'specify port number (default: 80/8080)',
-          parsePortNumberExn)
-  .option('--https-port <n>',
-          'specify HTTPS port number (default: 443/8443)',
-          parsePortNumberExn)
-  .option('-d, --dbpath <path>',
-          'specify database file (default: ./data.db)')
-  .option('-l, --log-dir <dir>',
-          'specify log directory (default: ./logs)')
-  .option('-k, --keypath <path>',
-          'specify SSL private key file (default: ./server.key)')
-  .option('-c, --certpath <path>',
-          'specify SSL certificate file (default: ./server.pem)')
+  .version('0.1.1')
+  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, isProduction ?  80 : 8080)
+  .option('-s --https-port <n>' , 'specify HTTPS port number (default: 443/8443)'       , parsePortNumberExn, isProduction ? 443 : 8443)
+  .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
+  .option('-l --log-dir <dir>'  , 'specify log directory (default: ./logs)'             , './logs')
+  .option('-k --keypath <path>' , 'specify SSL private key file (default: ./server.key)', './server.key')
+  .option('-c --certpath <path>', 'specify SSL certificate file (default: ./server.pem)', './server.pem')
   .parse(process.argv);
-
-program.port = program.port || (isProduction ? 80 : 8080);
-program.httpsPort = program.httpsPort || (isProduction ? 443 : 8443);
-program.dbpath = program.dbpath || './data.db';
-program.logDir = program.logDir || './logs';
-program.keypath = program.keypath || './server.key';
-program.certpath = program.certpath || './server.pem';
 
 const api = require('./api');
 const db = require('./db');
