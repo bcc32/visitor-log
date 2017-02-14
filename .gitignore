@@ -42,3 +42,7 @@ data.db-*
 
 # Webpack bundle output
 dist
+
+# SSL Key and Certificate
+server.key
+server.pem
