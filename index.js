@@ -21,7 +21,7 @@ function parsePortNumberExn(input) {
 const isProduction = global.isProduction = process.env.NODE_ENV === 'production';
 
 program
-  .version('0.1.1')
+  .version('0.1.2')
   .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, isProduction ?  80 : 8080)
   .option('-s --https-port <n>' , 'specify HTTPS port number (default: 443/8443)'       , parsePortNumberExn, isProduction ? 443 : 8443)
   .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
