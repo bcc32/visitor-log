@@ -59,7 +59,7 @@ update msg model =
   case msg of
     NewMessage s -> { model | messages = (s :: model.messages) } ! []
     LoadMessages (Ok ms) -> { model | messages = ms } ! [ getUpdate ]
-    LoadMessages (Err e) -> model ! [ getUpdate ] -- TODO show error
+    LoadMessages (Err e) -> model ! [] -- TODO show error
     UpdateMessages _ -> model ! [ getMessages ]
 
 -- SUBSCRIPTIONS
