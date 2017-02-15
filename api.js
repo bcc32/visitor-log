@@ -1,6 +1,7 @@
 const EventEmitter = require('events');
 const bodyParser   = require('body-parser');
 const express      = require('express');
+const moment       = require('moment');
 
 const db  = require('./db');
 const log = require('./log');
@@ -22,6 +23,11 @@ router.get('/ping', (req, res) => {
   res.status(200).send(`${callback}(${JSON.stringify(data)})`);
 });
 
+function addHumanTimestamp(message) {
+  message.timestampHuman = moment(message.timestamp).fromNow();
+  return message;
+}
+
 const messageBus = new EventEmitter();
 messageBus.setMaxListeners(100);
 
@@ -42,6 +48,7 @@ router.get('/messages', (req, res) => {
   }
 
   msg.getAll({ limit, reverse })
+    .map(addHumanTimestamp)
     .then((messages) => {
       res.status(200).json(messages);
     })
@@ -85,6 +92,7 @@ router.get('/messages/update', (req, res) => {
 router.get('/messages/:id', (req, res) => {
   const id = req.params.id;
   msg.get(id)
+    .then(addHumanTimestamp)
     .then((data) => {
       res.status(200).json(data);
     })

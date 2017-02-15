@@ -11,19 +11,7 @@ block content
         span.input-group-btn
           button.btn.btn-default(type='submit') Post
 
-  p: table#messages.table.table-condensed.table-hover
-    thead
-      th.max-width Message
-      th.min-width Time
-    tbody
-      for msg in messages
-        tr
-          td.max-width= msg.message
-          td.min-width(title=msg.timestamp)= msg.time
-    tfoot
-      - const word = 'message' + (messages.length === 1 ? '' : 's');
-      - const number = messages.length ? String(messages.length) : 'no'
-      tr: td.center(colspan=2) (#{number} #{word})
+  div#elm-app
 
   h2#about-me About me
   include includes/about-me.pug

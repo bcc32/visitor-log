@@ -59,15 +59,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  msg.getAll({ limit: 20, reverse: true })
-    .then((messages) => {
-      messages.forEach((m) => m.time = moment(m.timestamp).fromNow());
-      res.render('index', { messages });
-    })
-    .catch((e) => {
-      log.error(e);
-      res.status(500).end();
-    });
+  res.render('index');
 });
 
 app.use('/api', api);

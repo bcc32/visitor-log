@@ -8,14 +8,13 @@ hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
 hljs.registerLanguage('ocaml', require('highlight.js/lib/languages/ocaml'));
 hljs.initHighlightingOnLoad();
 
-function poll() {
-  $.get('/api/messages/update')
-    .done(() => {
-      location.reload();
-    });
-}
+// Elm components
+const Elm = require('./elm/Messages.elm');
 
 $(() => {
+  var node = document.getElementById('elm-app');
+  Elm.Main.embed(node);
+
   const $messageForm = $('#message-form');
   const $message = $('#message');
 
@@ -25,12 +24,10 @@ $(() => {
     $.post('/api/messages', { message })
       .done(() => {
         $message.val('');
-        location.reload();
       });
   });
 
   $message.focus();
-  poll();
 
   $('a.link').click(function () {
     const $elt = $(this);
