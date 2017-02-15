@@ -42,9 +42,9 @@ getUpdate =
 decodeMessage : Decode.Decoder Message
 decodeMessage =
   Decode.map3 Message
-    (Decode.field "message"        Decode.string)
-    (Decode.field "timestamp"      Decode.string)
-    (Decode.field "timestampHuman" Decode.string)
+    (Decode.field "message"         Decode.string)
+    (Decode.field "timestamp"       Decode.string)
+    (Decode.field "timestamp_human" Decode.string)
 
 decodeMessages : Decode.Decoder (List Message)
 decodeMessages = Decode.list decodeMessage

@@ -24,7 +24,7 @@ router.get('/ping', (req, res) => {
 });
 
 function addHumanTimestamp(message) {
-  message.timestampHuman = moment(message.timestamp).fromNow();
+  message.timestamp_human = moment(message.timestamp).fromNow();
   return message;
 }
 
