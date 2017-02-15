@@ -8,12 +8,19 @@ module.exports = {
   },
   devtool: 'source-map',
   module: {
+    noParse: /\.elm$/,
     rules: [
       { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },
       {
         test: /\.js$/,
         loader: 'babel-loader',
         options: { presets: ['es2015'] },
+      },
+      {
+        test: /\.elm$/,
+        exclude: [ /elm-stuff/, /node_modules/ ],
+        loader: 'elm-webpack-loader',
+        options: { cwd: 'client/elm' },
       },
       { test: /\.less$/, use: [ 'style-loader', 'css-loader', 'less-loader' ] },
       { test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, use: [{ loader: 'url-loader', options: { limit: 10000, mimetype: 'application/font-woff' } }] },

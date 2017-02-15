@@ -46,3 +46,6 @@ dist
 # SSL Key and Certificate
 server.key
 server.pem
+
+# Elm build stuff
+elm-stuff
