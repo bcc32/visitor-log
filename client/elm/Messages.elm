@@ -1,8 +1,8 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Json.Decode as Decode
-import Time exposing (Time)
+import Json.Decode as Decode exposing (field, string)
+import Time exposing (Time, second)
 
 main =
   Html.program
@@ -22,50 +22,68 @@ type alias Message =
 
 type alias Model =
   { messages : List Message
+  , hasError : Bool -- last server request responded with an error
+  , updatePending : Bool
   }
 
 init : (Model, Cmd Msg)
-init = (Model [], getMessages)
+init = (Model [] False False, getMessages)
 
 -- UPDATE
 
 getMessages : Cmd Msg
 getMessages =
   Http.get "/api/messages" decodeMessages
-  |> Http.send LoadMessages
-
-getUpdate : Cmd Msg
-getUpdate =
-  Http.getString "/api/messages/update"
-  |> Http.send UpdateMessages
+  |> Http.send MessageList
 
 decodeMessage : Decode.Decoder Message
 decodeMessage =
   Decode.map3 Message
-    (Decode.field "message"         Decode.string)
-    (Decode.field "timestamp"       Decode.string)
-    (Decode.field "timestamp_human" Decode.string)
+    (field "message"         string)
+    (field "timestamp"       string)
+    (field "timestamp_human" string)
 
 decodeMessages : Decode.Decoder (List Message)
 decodeMessages = Decode.list decodeMessage
 
+getUpdate : Cmd Msg
+getUpdate =
+  Http.getString "/api/messages/update"
+  |> Http.send MessageUpdate
+
+decodeUpdate : Decode.Decoder Message
+decodeUpdate = decodeMessage
+
 type Msg =
     NewMessage Message
-  | LoadMessages (Result Http.Error (List Message))
-  | UpdateMessages (Result Http.Error String)
+  | MessageList (Result Http.Error (List Message))
+  | MessageUpdate (Result Http.Error String)
+  | Poll
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    NewMessage s -> { model | messages = (s :: model.messages) } ! []
-    LoadMessages (Ok ms) -> { model | messages = ms } ! [ getUpdate ]
-    LoadMessages (Err e) -> model ! [] -- TODO show error
-    UpdateMessages _ -> model ! [ getMessages ]
+  let
+    (newModel, cmd) =
+      case msg of
+        NewMessage s -> { model | messages = (s :: model.messages) } ! []
+        MessageList (Ok ms) -> { model | hasError = False, messages = ms } ! []
+        MessageList (Err e) -> { model | hasError = True } ! [] -- TODO show error
+        MessageUpdate (Ok _) -> { model | hasError = False, updatePending = False } ! [ getMessages ]
+        MessageUpdate (Err _) -> { model | hasError = True, updatePending = False } ! []
+        Poll -> model ! [ getMessages ]
+    (maybeUpdate, updatePending) =
+      if not newModel.hasError && not newModel.updatePending then
+        (getUpdate, True)
+      else
+        (Cmd.none, newModel.updatePending)
+  in
+  { newModel | updatePending = updatePending } ! [cmd, maybeUpdate]
 
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none -- TODO subscribe to updates from server
+subscriptions model =
+  Time.every (30 * second) (\time -> Poll)
 
 -- VIEW
 
