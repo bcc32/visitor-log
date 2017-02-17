@@ -112,13 +112,12 @@ view model =
     n = List.length model.messages
     messageCount =
       if n == 1 then
-        "1 message"
+        "(1 message)"
       else
-        toString n ++ " messages"
+        "(" ++ toString n ++ " messages)"
   in
   table [ id "messages", class "table table-condensed table-hover" ]
     [ thead [] [ headerRow ]
     , tbody [] (List.map messageRow model.messages)
-    , tfoot [ class "center", colspan 2 ]
-      [ text messageCount ]
+    , tfoot [] [ td [ class "center", colspan 2 ] [ text messageCount ] ]
     ]
