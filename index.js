@@ -44,8 +44,12 @@ app.locals.basedir = __dirname;
 
 app.use(expressWinston.logger({ winstonInstance: log }));
 
-app.use(express.static('./dist'));
-app.use(express.static('./public'));
+const staticOpts = {
+  index: false,
+  maxAge: '90d',
+};
+app.use(express.static('./dist', staticOpts));
+app.use(express.static('./public', staticOpts));
 
 app.use((req, res, next) => {
   const ip = req.ip;
