@@ -36,13 +36,7 @@ const log = require('./log');
 const msg = require('./msg');
 
 const app = express();
-app.use(requireHTTPS);
 app.use(compression());
-
-app.set('view engine', 'pug');
-app.locals.basedir = __dirname;
-
-app.use(expressWinston.logger({ winstonInstance: log }));
 
 const staticOpts = {
   index: false,
@@ -50,6 +44,13 @@ const staticOpts = {
 };
 app.use(express.static('./dist', staticOpts));
 app.use(express.static('./public', staticOpts));
+
+app.use(requireHTTPS);
+
+app.set('view engine', 'pug');
+app.locals.basedir = __dirname;
+
+app.use(expressWinston.logger({ winstonInstance: log }));
 
 app.use((req, res, next) => {
   const ip = req.ip;
