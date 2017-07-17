@@ -1,10 +1,15 @@
 {
   "name": "visitor-log",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Records visitors to the site and allows them to post messages",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build:bsb": "bsb -make-world",
+    "build:js": "rollup -c",
+    "build:lessc": "lessc client/style.less dist/style.css",
+    "build:code": "run-s build:bsb build:js",
+    "build:styles": "run-s build:lessc",
+    "build": "run-p build:code build:styles",
     "dev": "forever start config/development.json",
     "lint": "eslint --fix .",
     "start": "forever start config/production.json",
@@ -29,19 +34,16 @@
     "winston-daily-rotate-file": "^1.4.4"
   },
   "devDependencies": {
-    "babel-core": "^6.22.1",
-    "babel-loader": "^6.2.10",
-    "babel-preset-es2015": "^6.22.0",
     "bootstrap": "^3.3.7",
+    "bs-platform": "^1.8.1",
+    "bucklescript-tea": "^0.6.2",
     "css-loader": "^0.26.1",
-    "elm-webpack-loader": "^4.2.0",
     "eslint": "^3.14.1",
-    "file-loader": "^0.10.0",
     "less": "^2.7.2",
-    "less-loader": "^2.2.3",
-    "style-loader": "^0.13.1",
-    "url-loader": "^0.5.7",
-    "webpack": "^2.2.0"
+    "npm-run-all": "^4.0.2",
+    "rollup": "^0.45.2",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0"
   },
   "repository": {
     "type": "git",

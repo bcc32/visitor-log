@@ -1,15 +1,15 @@
-// static assets
-require('./style.less');
-
 // Code syntax highlighting
-require('highlight.js/styles/solarized-light.css');
-const hljs = require('highlight.js/lib/highlight');
-hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
-hljs.registerLanguage('ocaml', require('highlight.js/lib/languages/ocaml'));
+import hljs from 'highlight.js/lib/highlight';
+import cpp from 'highlight.js/lib/languages/cpp';
+import ocaml from 'highlight.js/lib/languages/ocaml';
+hljs.registerLanguage('cpp', cpp);
+hljs.registerLanguage('ocaml', ocaml);
 hljs.initHighlightingOnLoad();
 
 // Elm components
-const Elm = require('./elm/Messages.elm');
+import Elm from './elm/Messages.js';
+
+import $ from 'jquery';
 
 $(() => {
   var node = document.getElementById('elm-app');
