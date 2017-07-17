@@ -10,8 +10,12 @@
     "build:code": "run-s build:bsb build:js",
     "build:styles": "run-s build:lessc",
     "build": "run-p build:code build:styles",
-    "dev": "forever start config/development.json",
+    "watch:bsb": "bsb -w",
+    "watch:js": "rollup -c -w",
+    "prewatch": "run-s build",
+    "watch": "run-p watch:bsb watch:js",
     "lint": "eslint --fix .",
+    "dev": "forever start config/development.json",
     "start": "forever start config/production.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
