@@ -29,7 +29,6 @@
     "express": "^4.15.3",
     "express-winston": "^2.4.0",
     "highlight.js": "^9.12.0",
-    "jquery": "^3.2.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.18.1",
     "pug": "^2.0.0-rc.2",
@@ -42,11 +41,13 @@
     "bs-platform": "^1.8.1",
     "bucklescript-tea": "^0.6.2",
     "eslint": "^3.19.0",
+    "jquery": "^3.2.1",
     "less": "^2.7.2",
     "npm-run-all": "^4.0.2",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-watch": "^4.3.1"
   },
   "repository": {
     "type": "git",
