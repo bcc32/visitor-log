@@ -45,7 +45,8 @@ let get_update =
 ;;
 
 let init () =
-  ( { Model. messages = []
+  ( { Model.
+      messages = []
     ; has_error = false
     ; update_pending = false
     }
