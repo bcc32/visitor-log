@@ -11,6 +11,11 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
+router.use((req, res, next) => {
+  res.set({ 'Cache-Control': 'No-Cache' });
+  next();
+});
+
 router.get('/ping', (req, res) => {
   if (req.query.nonce == null || req.query.callback == null) {
     res.status(400).end();
