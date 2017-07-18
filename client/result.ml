@@ -30,3 +30,5 @@ let bind t ~f =
 ;;
 
 let (>>=) = bind
+
+let ok_unit = Ok ()

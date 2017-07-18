@@ -11,7 +11,7 @@ end
 module Msg = struct
   type t =
     | Message_list of (Message.t list, Error.t) Result.t
-    | Message_update of (string, Error.t) Result.t
+    | Message_update of (unit, Error.t) Result.t
     | Poll
 end
 
@@ -40,7 +40,7 @@ let get_messages =
 let get_update =
   Tea.Http.getString "/api/messages/update"
   |> Tea.Http.send (function
-    | Ok _ as ok -> Msg.Message_update ok
+    | Ok _ -> Msg.Message_update Result.ok_unit
     | Error e -> Msg.Message_update (Error (Error.of_http_error e)))
 ;;
 

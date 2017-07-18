@@ -23,3 +23,5 @@ val (>>=)
   -> ('b, 'err) t
 
 val all : ('a, 'err) t list -> ('a list, 'err) t
+
+val ok_unit : (unit, _) t
