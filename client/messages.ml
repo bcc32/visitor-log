@@ -10,7 +10,6 @@ end
 
 module Msg = struct
   type t =
-    | New_message of Message.t
     | Message_list of (Message.t list, Error.t) Result.t
     | Message_update of (string, Error.t) Result.t
     | Poll
@@ -57,7 +56,6 @@ let init () =
 let update (model : Model.t) (msg : Msg.t) =
   let (model, cmd) =
     match msg with
-    | New_message s -> ({ model with messages = (s :: model.messages) }, Tea.Cmd.none)
     | Message_list (Ok messages) -> ({ model with has_error = false; messages }, Tea.Cmd.none)
     | Message_list (Error _) -> ({ model with has_error = true }, Tea.Cmd.none) (* TODO show error *)
     | Message_update (Ok _) -> ({ model with has_error = false; update_pending = false }, get_messages)

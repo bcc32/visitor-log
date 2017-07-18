@@ -1,6 +1,6 @@
 type t =
-  { text            : string
-  ; timestamp       : string
+  { text      : string
+  ; timestamp : string
   }
 
 let of_json json =
