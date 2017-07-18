@@ -47,5 +47,6 @@ dist
 server.key
 server.pem
 
-# Elm build stuff
-elm-stuff
+# BuckleScript output
+/lib
+.merlin
