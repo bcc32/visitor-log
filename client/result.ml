@@ -1,20 +1,32 @@
-type ('a, 'b) t = ('a, 'b) Tea.Result.t =
+type ('a, 'err) t = ('a, 'err) Tea.Result.t =
   | Ok of 'a
-  | Error of 'b
+  | Error of 'err
 
 let all ts =
-  let rec loop ts oks errors =
+  let rec loop ts oks =
     match ts with
-    | [] ->
-      begin match errors with
-      | [] -> Ok (List.rev oks)
-      | _ -> Error (List.rev errors)
-      end
+    | [] -> Ok (List.rev oks)
     | hd :: tl ->
       begin match hd with
-      | Ok x -> loop tl (x :: oks) errors
-      | Error x -> loop tl oks (x :: errors)
+      | Ok x -> loop tl (x :: oks)
+      | Error _ as err -> err
       end
   in
-  loop ts [] []
+  loop ts []
 ;;
+
+let map t ~f =
+  match t with
+  | Error e -> Error e
+  | Ok x -> Ok (f x)
+;;
+
+let (>>|) = map
+
+let bind t ~f =
+  match t with
+  | Error e -> Error e
+  | Ok x -> f x
+;;
+
+let (>>=) = bind

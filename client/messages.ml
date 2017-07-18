@@ -1,3 +1,5 @@
+open! Import
+
 module Model = struct
   type t =
     { messages : Message.t list
@@ -36,8 +38,8 @@ module Msg = struct
 end
 
 let get_messages =
-  let handle_response (result : (string, string Tea.Http.error) Result.t) : Msg.t =
-    Message_list (
+  let handle_response result =
+    Msg.Message_list (
       match result with
       | Error e -> Error (Error.of_http_error e)
       | Ok s ->
@@ -49,12 +51,9 @@ let get_messages =
           |> Array.to_list
           |> List.map (fun json ->
             match Message.of_json json with
-            | None -> (Error (Error.of_string "could not parse message") : (_, _) Result.t)
+            | None -> (Error (Error.of_string "could not parse message"))
             | Some msg -> Ok msg)
-          |> Result.all
-          |> function
-          | Ok _ as ok -> ok
-          | Error errs -> Error (Error.of_list errs))
+          |> Result.all)
   in
   Tea.Http.getString "/api/messages"
   |> Tea.Http.send handle_response
