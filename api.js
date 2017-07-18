@@ -85,7 +85,6 @@ router.get('/messages/update', (req, res) => {
 router.get('/messages/:id', (req, res) => {
   const id = req.params.id;
   msg.get(id)
-    .then(addHumanTimestamp)
     .then((data) => {
       res.status(200).json(data);
     })
