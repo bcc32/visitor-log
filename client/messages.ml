@@ -86,9 +86,10 @@ let header_row =
 
 let message_row (msg : Message.t) =
   let open Tea.Html in
+  let timestamp_human = Moment.fromnow msg.timestamp in
   let html_timestamp =
     td [ class' "min-width"; Vdom.prop "title" msg.timestamp ]
-      [ text msg.timestamp_human ]
+      [ text timestamp_human ]
   in
   tr []
     [ td [ class' "max-width" ] [ text msg.text ]

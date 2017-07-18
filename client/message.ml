@@ -1,7 +1,6 @@
 type t =
   { text            : string
   ; timestamp       : string
-  ; timestamp_human : string
   }
 
 let of_json json =
@@ -16,10 +15,9 @@ let of_json json =
     match
       ( get "message"
       , get "timestamp"
-      , get "timestamp_human"
       )
     with
-    | Some text, Some timestamp, Some timestamp_human ->
-      Some { text; timestamp; timestamp_human }
+    | Some text, Some timestamp ->
+      Some { text; timestamp }
     | _ -> None
 ;;
