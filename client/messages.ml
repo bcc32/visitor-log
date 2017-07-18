@@ -99,6 +99,7 @@ let view (model : Model.t) =
   let open Tea.Html in
   let message_count =
     match List.length model.messages with
+    | 0 -> "(no messages)"
     | 1 -> "(1 message)"
     | n -> Printf.sprintf "(%d messages)" n
   in
