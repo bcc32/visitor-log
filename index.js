@@ -4,7 +4,6 @@ const expressWinston = require('express-winston');
 const fs             = require('fs');
 const http           = require('http');
 const https          = require('https');
-const moment         = require('moment');
 const program        = global.program = require('commander');
 const url            = require('url');
 
@@ -33,7 +32,6 @@ program
 const api = require('./api');
 const db  = require('./db');
 const log = require('./log');
-const msg = require('./msg');
 
 const app = express();
 app.use(compression());

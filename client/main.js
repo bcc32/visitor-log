@@ -6,12 +6,12 @@ hljs.registerLanguage('cpp', cpp);
 hljs.registerLanguage('ocaml', ocaml);
 hljs.initHighlightingOnLoad();
 
+// Front-end
 import Messages from '../lib/js/client/messages.js';
 import $ from 'jquery';
 
 $(() => {
-  var node = document.getElementById('app');
-  Messages.main(node);
+  Messages.main($('#app')[0]);
 
   const $messageForm = $('#message-form');
   const $message = $('#message');
@@ -30,7 +30,7 @@ $(() => {
   $('a.link').click(function () {
     const $elt = $(this);
     const data = {
-      path: location.pathname,
+      path: window.location.pathname,
       label: $elt.text(),
       href: $elt.attr('href'),
     };

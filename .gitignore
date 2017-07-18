@@ -40,7 +40,7 @@ jspm_packages
 data.db
 data.db-*
 
-# Webpack bundle output
+# Build output
 dist
 
 # SSL Key and Certificate
