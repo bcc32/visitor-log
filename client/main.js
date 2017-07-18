@@ -6,14 +6,12 @@ hljs.registerLanguage('cpp', cpp);
 hljs.registerLanguage('ocaml', ocaml);
 hljs.initHighlightingOnLoad();
 
-// Elm components
-import Elm from './elm/Messages.js';
-
+import Messages from '../lib/js/client/messages.js';
 import $ from 'jquery';
 
 $(() => {
-  var node = document.getElementById('elm-app');
-  Elm.Main.embed(node);
+  var node = document.getElementById('app');
+  Messages.main(node);
 
   const $messageForm = $('#message-form');
   const $message = $('#message');
