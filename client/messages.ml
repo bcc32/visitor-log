@@ -6,16 +6,32 @@ module Model = struct
     }
 end
 
-type error =
-  | HttpError of string Tea.Http.error
-  | ParseError of string
-  | Many of error list
+module Error = struct
+  type t = string Lazy.t
+
+  let to_string = Lazy.force
+
+  let of_http_error error =
+    lazy (Tea.Http.string_of_error error)
+  ;;
+
+  let of_string string =
+    lazy string
+  ;;
+
+  let of_list errors =
+    lazy (
+      errors
+      |> List.map to_string
+      |> String.concat "; ")
+  ;;
+end
 
 module Msg = struct
   type t =
     | New_message of Message.t
-    | Message_list of (Message.t list, error) Result.t
-    | Message_update of (string, string Tea.Http.error) Result.t
+    | Message_list of (Message.t list, Error.t) Result.t
+    | Message_update of (string, Error.t) Result.t
     | Poll
 end
 
@@ -23,22 +39,22 @@ let get_messages =
   let handle_response (result : (string, string Tea.Http.error) Result.t) : Msg.t =
     Message_list (
       match result with
-      | Error e -> Error (HttpError e)
+      | Error e -> Error (Error.of_http_error e)
       | Ok s ->
         match s |> Js.Json.parseExn |> Js.Json.decodeArray with
-        | exception _ -> Error (ParseError "not JSON")
-        | None -> Error (ParseError "not an array")
+        | exception _ -> Error (Error.of_string "not JSON")
+        | None -> Error (Error.of_string "not an array")
         | Some jsons ->
           jsons
           |> Array.to_list
           |> List.map (fun json ->
             match Message.of_json json with
-            | None -> (Error (ParseError "could not parse message") : (_, _) Result.t)
+            | None -> (Error (Error.of_string "could not parse message") : (_, _) Result.t)
             | Some msg -> Ok msg)
           |> Result.all
           |> function
           | Ok _ as ok -> ok
-          | Error errs -> Error (Many errs))
+          | Error errs -> Error (Error.of_list errs))
   in
   Tea.Http.getString "/api/messages"
   |> Tea.Http.send handle_response
@@ -46,7 +62,10 @@ let get_messages =
 
 let get_update =
   Tea.Http.getString "/api/messages/update"
-  |> Tea.Http.send (fun x -> (Message_update x : Msg.t))
+  |> Tea.Http.send (function
+    | Ok _ as ok -> Msg.Message_update ok
+    | Error e -> Msg.Message_update (Error (Error.of_http_error e)))
+;;
 
 let init () =
   ( { Model. messages = []
@@ -55,6 +74,7 @@ let init () =
     }
   , get_messages
   )
+;;
 
 let update (model : Model.t) (msg : Msg.t) =
   let (model, cmd) =
