@@ -1,9 +1,18 @@
 open! Import
 
+module Word_status = struct
+  type t =
+    | No_input
+    | Pending
+    | Word of string
+
+  let is_pending t = t = Pending
+end
+
 module Model = struct
   type t =
     { url  : string
-    ; word : string option }
+    ; word : Word_status.t }
 end
 
 module Msg = struct
@@ -17,7 +26,7 @@ end
 let init () =
   ( { Model.
       url  = ""
-    ; word = None }
+    ; word = No_input }
   , Tea.Cmd.none )
 ;;
 
@@ -68,16 +77,17 @@ let submit_input_cmd url =
 let update (model : Model.t) msg =
   match (msg : Msg.t) with
   | Submit_input ->
-    ( model, submit_input_cmd model.url )
+    ( { model with word = Pending }
+    , submit_input_cmd model.url )
   | Url url ->
     ( { Model.
         url
-      ; word = None }
+      ; word = No_input }
     , Tea.Cmd.none )
   | Short_url (url, word) ->
     let model =
       if url = model.url
-      then { model with word = Some word }
+      then { model with word = Word word }
       else model
     in
     ( model, Tea.Cmd.none )
@@ -87,14 +97,20 @@ let subscriptions _ = Tea.Sub.none
 
 external current_href : string = "location.href" [@@bs.val]
 
-let view_short_url word =
+let view_short_url (word : Word_status.t) =
   let open Tea.Html in
-  match word with
-  | None -> noNode              (* TODO show a node with pending indication *)
-  | Some s ->
-    let url = current_href ^ "/" ^ s in
-    a [ id "short-url"; href url ]
-      [ h2 [] [ text s ] ]
+  let (href, text) =
+    match word with
+    | Word w -> (href (current_href ^ "/" ^ w), text w)
+    | _ -> (noProp, noNode)
+  in
+  let muted_if_pending =
+    match word with
+    | Pending -> class' "text-muted"
+    | _ -> noProp
+  in
+  a [ id "short-url"; href ]
+    [ h2 [ muted_if_pending ] [ text ] ]
 ;;
 
 let submit_and_prevent_default event =
@@ -109,10 +125,10 @@ let view (model : Model.t) =
     [ form [ class' "form"; onCB "submit" "" submit_and_prevent_default ]
         [ div [ class' "input-group" ]
             [ label [ class' "input-group-addon"; for' "url" ] [ text "URL" ]
-            (* TODO when pending, disable input *)
             ; input' [ id "url"; class' "form-control"
                      ; value model.url
                      ; autofocus true
+                     ; Attributes.disabled (Word_status.is_pending model.word)
                      ; onInput Msg.url ] []
             ; span [ class' "input-group-btn" ]
                 [ button [ class' "btn btn-primary"; type' "button" ]
