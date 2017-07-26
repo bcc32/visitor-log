@@ -71,9 +71,7 @@ let submit_input_cmd url =
 let update (model : Model.t) msg =
   match (msg : Msg.t) with
   | Submit_input ->
-    ( { model
-        with url = "" }
-    , submit_input_cmd model.url )
+    ( model, submit_input_cmd model.url )
   | Url url ->
     ( { Model.
         url
@@ -111,6 +109,7 @@ let view (model : Model.t) =
     [ form [ class' "form"; onCB "submit" "" submit_and_prevent_default ]
         [ div [ class' "input-group" ]
             [ label [ class' "input-group-addon"; for' "url" ] [ text "URL" ]
+            (* TODO when pending, disable input *)
             ; input' [ id "url"; class' "form-control"
                      ; value model.url
                      ; autofocus true
