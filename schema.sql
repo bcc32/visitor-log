@@ -36,3 +36,17 @@ CREATE TABLE IF NOT EXISTS link_clicks (
 CREATE INDEX IF NOT EXISTS link_clicks_visitor_id ON link_clicks (
   visitor_id
 );
+
+CREATE TABLE IF NOT EXISTS words (
+  word TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS urls (
+  short_url TEXT PRIMARY KEY NOT NULL,
+  url TEXT NOT NULL,
+  expiry TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS urls_expiry ON urls (
+  expiry
+);

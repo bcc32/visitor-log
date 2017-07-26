@@ -114,10 +114,22 @@ router.post('/link-clicks', (req, res) => {
 
 router.post('/u', (req, res) => {
   const { url } = req.body;
-  res.status(201)
-    .json({
-      url,
-      short_url: url[url.length - 1] // TODO
+
+  db.makeShortUrl(url)
+    .then(({ short_url, url, expiry }) => {
+      res.status(201)
+        .json({
+          url,
+          short_url,
+          expiry
+        });
+    })
+    .catch(db.NoAvailableWordsError, (e) => {
+      res.status(503).json(e);
+    })
+    .catch((e) => {
+      log.error(e);
+      res.status(500).end();
     });
 });
 

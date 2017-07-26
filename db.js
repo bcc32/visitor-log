@@ -71,3 +71,79 @@ db.serialize(() => {
     return stmt.runAsync(values);
   };
 }
+
+{
+  function NoAvailableWordsError(message) {
+    this.message = 'No words are available for short URLs';
+    this.name = "NoAvailableWordsError";
+    Error.captureStackTrace(this, NoAvailableWordsError);
+  }
+  db.NoAvailableWordsError = NoAvailableWordsError;
+
+  NoAvailableWordsError.prototype = Object.create(Error.prototype);
+  NoAvailableWordsError.prototype.constructor = NoAvailableWordsError;
+
+  const beginTransaction = db.prepare(String.raw`
+    BEGIN TRANSACTION
+  `);
+
+  const selectWord = db.prepare(String.raw`
+    SELECT word FROM (SELECT word FROM words LIMIT 100)
+    ORDER BY RANDOM()
+    LIMIT 1
+  `);
+
+  const deleteWord = db.prepare(String.raw`
+    DELETE FROM words WHERE word = $word
+  `);
+
+  const insertNewUrl = db.prepare(String.raw`
+    INSERT INTO urls (short_url, url, expiry)
+    VALUES ($short_url, $url, $expiry)
+  `);
+
+  const commitTransaction = db.prepare(String.raw`
+    COMMIT TRANSACTION
+  `);
+
+  const rollbackTransaction = db.prepare(String.raw`
+    ROLLBACK TRANSACTION
+  `);
+
+  db.makeShortUrl = (url) => {
+    let expiry = new Date();
+    expiry.setHours(expiry.getHours() + 1);
+    expiry = expiry.toISOString();
+
+    return beginTransaction.runAsync()
+      .then(() => selectWord.getAsync())
+      .then((row) => {
+        if (row == null) {
+          throw new NoAvailableWordsError();
+        }
+        return row.word;
+      })
+      .tap((word) => deleteWord.runAsync({ $word: word }))
+      .tap((word) => insertNewUrl.runAsync({
+        $short_url: word,
+        $url: url,
+        $expiry: expiry,
+      }))
+      .tap(() => commitTransaction.runAsync())
+      .tapCatch((e) => {
+        console.error('rolling back transaction');
+        rollbackTransaction.runAsync();
+      })
+      .then((word) => {
+        return {
+          short_url: word,
+          url,
+          expiry,
+        };
+      })
+      .finally(() => {
+        selectWord.reset();
+        deleteWord.reset();
+      });
+  };
+}
