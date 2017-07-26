@@ -55,14 +55,13 @@ let submit_input_cmd url =
                                                           message *)
   in
   let req =
-    { method' = "POST"
-    ; headers = []
-    ; url = "/api/u"
-    ; body = FormListBody [ ( "url", url ) ]
-    ; expect = Expect (JsonResponseType, handle_response)
-    ; timeout = None
-    ; withCredentials = false
-    }
+    { method'         = "POST"
+    ; headers         = []
+    ; url             = "/api/u"
+    ; body            = FormListBody [ ( "url", url ) ]
+    ; expect          = Expect (JsonResponseType, handle_response)
+    ; timeout         = None
+    ; withCredentials = false }
     |> Tea.Http.request
   in
   send handle_result req

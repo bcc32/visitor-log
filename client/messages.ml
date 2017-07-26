@@ -2,16 +2,15 @@ open! Import
 
 module Model = struct
   type t =
-    { messages : Message.t list
-    ; has_error : bool          (* last server request responded with an error *)
-    ; update_pending : bool
-    }
+    { messages       : Message.t list
+    ; has_error      : bool    (* last server request responded with an error *)
+    ; update_pending : bool }
 end
 
 module Msg = struct
   type t =
-    | Message_list of (Message.t list, Error.t) Result.t
-    | Message_update of (unit, Error.t) Result.t
+    | Message_list   of (Message.t list, Error.t) Result.t
+    | Message_update of (unit          , Error.t) Result.t
     | Poll
 end
 
@@ -29,7 +28,7 @@ let get_messages =
           |> Array.to_list
           |> List.map (fun json ->
             match Message.of_json json with
-            | None -> (Error (Error.of_string "could not parse message"))
+            | None -> Error (Error.of_string "could not parse message")
             | Some msg -> Ok msg)
           |> Result.all)
   in
@@ -46,17 +45,15 @@ let get_update =
 
 let init () =
   ( { Model.
-      messages = []
-    ; has_error = false
-    ; update_pending = false
-    }
-  , get_messages
-  )
+      messages       = []
+    ; has_error      = false
+    ; update_pending = false }
+  , get_messages )
 ;;
 
-let update (model : Model.t) (msg : Msg.t) =
+let update (model : Model.t) msg =
   let (model, cmd) =
-    match msg with
+    match (msg : Msg.t) with
     | Message_list (Ok messages) -> ({ model with has_error = false; messages }, Tea.Cmd.none)
     | Message_list (Error _) -> ({ model with has_error = true }, Tea.Cmd.none) (* TODO show error *)
     | Message_update (Ok _) -> ({ model with has_error = false; update_pending = false }, get_messages)
@@ -68,7 +65,8 @@ let update (model : Model.t) (msg : Msg.t) =
     then (get_update, true)
     else (Tea.Cmd.none, model.update_pending)
   in
-  ({ model with update_pending = update_pending }, Tea.Cmd.batch [cmd; maybe_update])
+  ( { model with update_pending }
+  , Tea.Cmd.batch [ cmd; maybe_update ] )
 ;;
 
 let subscriptions _ =
@@ -79,8 +77,7 @@ let header_row =
   let open Tea.Html in
   tr []
     [ th [ class' "max-width" ] [ text "Message" ]
-    ; th [ class' "min-width" ] [ text "Time" ]
-    ]
+    ; th [ class' "min-width" ] [ text "Time" ] ]
 ;;
 
 let message_row (msg : Message.t) =
@@ -92,8 +89,7 @@ let message_row (msg : Message.t) =
   in
   tr []
     [ td [ class' "max-width" ] [ text msg.text ]
-    ; html_timestamp
-    ]
+    ; html_timestamp ]
 ;;
 
 let view (model : Model.t) =
@@ -107,8 +103,7 @@ let view (model : Model.t) =
   table [ id "messages"; class' "table table-condensed table-hover" ]
     [ thead [] [ header_row ]
     ; tbody [] (List.map message_row model.messages)
-    ; tfoot [] [ td [ class' "center"; Vdom.prop "colspan" "2" ] [ text message_count ] ]
-    ]
+    ; tfoot [] [ td [ class' "center"; Vdom.prop "colspan" "2" ] [ text message_count ] ] ]
 ;;
 
 let main =
@@ -116,6 +111,5 @@ let main =
     { init
     ; update
     ; subscriptions
-    ; view
-    }
+    ; view }
 ;;
