@@ -65,6 +65,10 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+app.get('/u', (req, res) => {
+  res.render('url-shortener');
+});
+
 app.use('/api', api);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));

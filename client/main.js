@@ -17,12 +17,12 @@ $(() => {
   const $message = $('#message');
 
   $messageForm.submit((e) => {
-    e.preventDefault();
     const message = $message.val();
     $.post('/api/messages', { message })
       .done(() => {
         $message.val('');
       });
+    return false;
   });
 
   $message.focus();

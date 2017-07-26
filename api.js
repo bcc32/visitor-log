@@ -1,6 +1,7 @@
 const EventEmitter = require('events');
 const bodyParser   = require('body-parser');
 const express      = require('express');
+const multer       = require('multer');
 
 const db  = require('./db');
 const log = require('./log');
@@ -10,6 +11,7 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
+router.use(multer().none());
 
 router.use((req, res, next) => {
   res.set({ 'Cache-Control': 'No-Cache' });
@@ -107,6 +109,17 @@ router.post('/link-clicks', (req, res) => {
     .catch((e) => {
       log.error(e);
       res.status(500).end();
+    });
+});
+
+router.post('/u', (req, res) => {
+  const { url } = req.body;
+  console.log(req.get('Content-Type'));
+  console.log('posted url', url);
+  res.status(201)
+    .json({
+      url,
+      short_url: url[url.length - 1] // TODO
     });
 });
 

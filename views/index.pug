@@ -1,6 +1,8 @@
 extends layout.pug
 
 block content
+  script(type='text/javascript', src='bundle.js')
+
   h1 Welcome
 
   p: form#message-form
@@ -15,3 +17,4 @@ block content
 
   h2#about-me About me
   include includes/about-me.pug
+  include includes/footer.pug
