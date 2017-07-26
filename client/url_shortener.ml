@@ -39,7 +39,7 @@ let decode_response json =
 
 let submit_input_cmd url =
   let open Tea.Http in
-  let handle_response (response : Tea.Http.response) =
+  let handle_response response =
     let { status; body; _ } = response in
     if status.code <> 201
     then (Error status.message)
@@ -54,17 +54,15 @@ let submit_input_cmd url =
     | Error e -> failwith (Tea.Http.string_of_error e) (* TODO show error
                                                           message *)
   in
-  let req =
+  request
     { method'         = "POST"
     ; headers         = []
     ; url             = "/api/u"
-    ; body            = FormListBody [ ( "url", url ) ]
+    ; body            = FormListBody [ ("url", url) ]
     ; expect          = Expect (JsonResponseType, handle_response)
     ; timeout         = None
     ; withCredentials = false }
-    |> Tea.Http.request
-  in
-  send handle_result req
+  |> send handle_result
 ;;
 
 let update (model : Model.t) msg =

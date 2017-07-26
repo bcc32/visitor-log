@@ -59,7 +59,7 @@ router.get('/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-  if (!req.body.message) {
+  if (req.body.message == null) {
     res.status(400).send('no message');
     return;
   }
