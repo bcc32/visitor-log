@@ -114,8 +114,6 @@ router.post('/link-clicks', (req, res) => {
 
 router.post('/u', (req, res) => {
   const { url } = req.body;
-  console.log(req.get('Content-Type'));
-  console.log('posted url', url);
   res.status(201)
     .json({
       url,
