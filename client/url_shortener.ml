@@ -2,22 +2,22 @@ open! Import
 
 module Model = struct
   type t =
-    { url       : string
-    ; short_url : string option }
+    { url  : string
+    ; word : string option }
 end
 
 module Msg = struct
   type t =
     | Submit_input
     | Url       of string
-    | Short_url of string * string (* url, short_url *)
+    | Short_url of string * string (* url, word *)
   [@@bs.deriving {accessors}]
 end
 
 let init () =
   ( { Model.
-      url       = ""
-    ; short_url = None }
+      url  = ""
+    ; word = None }
   , Tea.Cmd.none )
 ;;
 
@@ -26,14 +26,14 @@ let decode_response json =
   | None -> Error "not a JSON object"
   | Some dict ->
     let get x = Js.Dict.get dict x in
-    match get "url", get "short_url" with
+    match get "url", get "word" with
     | None, _ -> Error "missing key [url]"
-    | _, None -> Error "missing key [short_url]"
+    | _, None -> Error "missing key [word]"
     | Some a, Some b ->
       let str = Js.Json.decodeString in
       match str a, str b with
       | None, _ -> Error "[url] not a string"
-      | _, None -> Error "[short_url] not a string"
+      | _, None -> Error "[word] not a string"
       | Some a, Some b -> Ok (a, b)
 ;;
 
@@ -72,12 +72,12 @@ let update (model : Model.t) msg =
   | Url url ->
     ( { Model.
         url
-      ; short_url = None }
+      ; word = None }
     , Tea.Cmd.none )
-  | Short_url (url, short_url) ->
+  | Short_url (url, word) ->
     let model =
       if url = model.url
-      then { model with short_url = Some short_url }
+      then { model with word = Some word }
       else model
     in
     ( model, Tea.Cmd.none )
@@ -85,12 +85,15 @@ let update (model : Model.t) msg =
 
 let subscriptions _ = Tea.Sub.none
 
-let view_short_url short_url =
+external current_href : string = "location.href" [@@bs.val]
+
+let view_short_url word =
   let open Tea.Html in
-  match short_url with
+  match word with
   | None -> noNode              (* TODO show a node with pending indication *)
   | Some s ->
-    a [ id "short-url"; href s ]
+    let url = current_href ^ "/" ^ s in
+    a [ id "short-url"; href url ]
       [ h2 [] [ text s ] ]
 ;;
 
@@ -114,7 +117,7 @@ let view (model : Model.t) =
             ; span [ class' "input-group-btn" ]
                 [ button [ class' "btn btn-primary"; type' "button" ]
                     [ text "Go!" ] ] ] ]
-    ; view_short_url model.short_url ]
+    ; view_short_url model.word ]
 ;;
 
 let main =

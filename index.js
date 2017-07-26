@@ -69,6 +69,24 @@ app.get('/u', (req, res) => {
   res.render('url-shortener');
 });
 
+app.get('/u/:word', (req, res) => {
+  const word = req.params.word;
+
+  console.dir(word);
+
+  db.getShortUrl(word)
+    .then((url) => {
+      res.redirect(url);
+    })
+    .catch(db.UrlNotFoundError, () => {
+      res.status(404).render('url-not-found', { word });
+    })
+    .catch((e) => {
+      log.error(e);
+      res.status(500).end();
+    });
+});
+
 app.use('/api', api);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));

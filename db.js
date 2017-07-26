@@ -131,19 +131,49 @@ db.serialize(() => {
       }))
       .tap(() => commitTransaction.runAsync())
       .tapCatch((e) => {
-        console.error('rolling back transaction');
+        log.error('rolling back transaction', e);
         rollbackTransaction.runAsync();
       })
       .then((word) => {
         return {
-          short_url: word,
+          word,
           url,
           expiry,
         };
       })
-      .finally(() => {
-        selectWord.reset();
-        deleteWord.reset();
-      });
+      .finally(() => selectWord.resetAsync())
+      .finally(() => deleteWord.resetAsync());
+  };
+}
+
+{
+  function UrlNotFoundError(word) {
+    this.message = `No URL was found for "${word}"`;
+    this.name = "UrlNotFoundError";
+    Error.captureStackTrace(this, UrlNotFoundError);
+  }
+  db.UrlNotFoundError = UrlNotFoundError;
+
+  UrlNotFoundError.prototype = Object.create(Error.prototype);
+  UrlNotFoundError.prototype.constructor = UrlNotFoundError;
+
+  const selectUrl = db.prepare(String.raw`
+    SELECT url FROM urls
+    WHERE short_url = $short_url AND expiry >= $now
+  `);
+
+  db.getShortUrl = (word) => {
+    return selectUrl.getAsync({
+      $short_url: word,
+      $now: new Date().toISOString(),
+    })
+      .then((row) => {
+        if (row == null) {
+          throw new UrlNotFoundError(word);
+        }
+        return row.url;
+      })
+      .finally(() => selectUrl.resetAsync());
+    ;
   };
 }

@@ -116,11 +116,11 @@ router.post('/u', (req, res) => {
   const { url } = req.body;
 
   db.makeShortUrl(url)
-    .then(({ short_url, url, expiry }) => {
+    .then(({ word, url, expiry }) => {
       res.status(201)
         .json({
           url,
-          short_url,
+          word,
           expiry
         });
     })
