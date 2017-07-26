@@ -115,6 +115,8 @@ router.post('/link-clicks', (req, res) => {
 router.post('/u', (req, res) => {
   const { url } = req.body;
 
+  // TODO error when not a real URL, to avoid relative redirects
+
   db.makeShortUrl(url)
     .then(({ word, url, expiry }) => {
       res.status(201)
