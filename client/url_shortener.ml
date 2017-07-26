@@ -101,16 +101,16 @@ let view_short_url (word : Word_status.t) =
   let open Tea.Html in
   let (href, text) =
     match word with
-    | Word w -> (href (current_href ^ "/" ^ w), text w)
-    | _ -> (noProp, noNode)
+    | No_input -> (noProp, noNode)
+    | Pending  -> (noProp, text "pending...")
+    | Word w   -> (href (current_href ^ "/" ^ w), text w)
   in
   let muted_if_pending =
-    match word with
-    | Pending -> class' "text-muted"
-    | _ -> noProp
+    if Word_status.is_pending word
+    then (class' "text-muted")
+    else noProp
   in
-  a [ id "short-url"; href ]
-    [ h2 [ muted_if_pending ] [ text ] ]
+  h2 [] [ a [ href; muted_if_pending ] [ text ] ]
 ;;
 
 let submit_and_prevent_default event =

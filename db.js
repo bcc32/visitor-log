@@ -73,9 +73,9 @@ db.serialize(() => {
 }
 
 {
-  function NoAvailableWordsError(message) {
+  function NoAvailableWordsError() {
     this.message = 'No words are available for short URLs';
-    this.name = "NoAvailableWordsError";
+    this.name = 'NoAvailableWordsError';
     Error.captureStackTrace(this, NoAvailableWordsError);
   }
   db.NoAvailableWordsError = NoAvailableWordsError;
@@ -149,7 +149,7 @@ db.serialize(() => {
 {
   function UrlNotFoundError(word) {
     this.message = `No URL was found for "${word}"`;
-    this.name = "UrlNotFoundError";
+    this.name = 'UrlNotFoundError';
     Error.captureStackTrace(this, UrlNotFoundError);
   }
   db.UrlNotFoundError = UrlNotFoundError;
@@ -174,6 +174,5 @@ db.serialize(() => {
         return row.url;
       })
       .finally(() => selectUrl.resetAsync());
-    ;
   };
 }
