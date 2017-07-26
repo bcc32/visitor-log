@@ -42,7 +42,7 @@
   "devDependencies": {
     "bootstrap": "^3.3.7",
     "bs-platform": "^1.8.1",
-    "bucklescript-tea": "file:../bucklescript-tea",
+    "bucklescript-tea": "^0.6.3",
     "eslint": "^3.19.0",
     "jquery": "^3.2.1",
     "less": "^2.7.2",
