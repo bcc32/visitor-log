@@ -131,7 +131,9 @@ let view (model : Model.t) =
                      ; Attributes.disabled (Word_status.is_pending model.word)
                      ; onInput Msg.url ] []
             ; span [ class' "input-group-btn" ]
-                [ button [ class' "btn btn-primary"; type' "button" ]
+                [ button [ class' "btn btn-primary"
+                         ; type' "button"
+                         ; onClick Msg.submit_input ]
                     [ text "Go!" ] ] ] ]
     ; view_short_url model.word ]
 ;;
