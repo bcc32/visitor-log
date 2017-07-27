@@ -110,10 +110,10 @@ function requireHTTPS(req, res, next) {
     const target = {
       protocol: 'https:',
       hostname: req.hostname,
-      path: req.url,
+      pathname: req.originalUrl,
       port: program.httpsPort,
     };
-    res.redirect(301, url.format(target));
+    res.redirect(url.format(target));
     return;
   }
   next();
