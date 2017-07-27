@@ -113,16 +113,10 @@ let view_short_url (word : Word_status.t) =
   h2 [] [ a [ href; muted_if_pending ] [ text ] ]
 ;;
 
-let submit_and_prevent_default event =
-  event##preventDefault ();
-  event##stopPropagation ();
-  Some Msg.submit_input
-;;
-
 let view (model : Model.t) =
   let open Tea.Html in
   div []
-    [ form [ class' "form"; onCB "submit" "" submit_and_prevent_default ]
+    [ form [ class' "form"; Ev.submit_and_prevent_default Msg.submit_input ]
         [ div [ class' "input-group" ]
             [ label [ class' "input-group-addon"; for' "url" ] [ text "URL" ]
             ; input' [ id "url"; class' "form-control"

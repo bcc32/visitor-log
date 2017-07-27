@@ -1,3 +1,4 @@
+module Ev     = Ev
 module Result = Result
 
 type ('a, 'b) result = ('a, 'b) Result.t =

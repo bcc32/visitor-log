@@ -128,12 +128,6 @@ let message_row (msg : Message.t) =
     ; html_timestamp ]
 ;;
 
-let submit_and_prevent_default event =
-  event##preventDefault ();
-  event##stopPropagation ();
-  Some Msg.submit_input
-;;
-
 let view (model : Model.t) =
   let open Tea.Html in
   let message_count =
@@ -143,7 +137,7 @@ let view (model : Model.t) =
     | n -> Printf.sprintf "(%d messages)" n
   in
   div []
-    [ form [ id "message-form"; onCB "submit" "" submit_and_prevent_default ]
+    [ form [ id "message-form"; Ev.submit_and_prevent_default Msg.submit_input ]
         [ div [ class' "form-group" ]
             [ div [ class' "input-group" ]
                 [ label [ class' "sr-only"; for' "message" ] [ text "Message" ]
