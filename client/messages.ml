@@ -158,8 +158,7 @@ let view (model : Model.t) =
     ; table [ id "messages"; class' "table table-condensed table-hover" ]
         [ thead [] [ header_row ]
         ; tbody [] (List.map message_row model.messages)
-        ; tfoot [] [ td [ class' "center"; Vdom.prop "colspan" "2" ] [ text message_count ] ] ]
-    ]
+        ; tfoot [] [ td [ class' "center"; Vdom.prop "colspan" "2" ] [ text message_count ] ] ] ]
 ;;
 
 let main =
