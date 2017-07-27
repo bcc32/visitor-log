@@ -166,6 +166,6 @@ let main =
   Tea.App.standardProgram
     { init
     ; update
-    ; subscriptions
-    ; view }
+    ; view
+    ; subscriptions }
 ;;
