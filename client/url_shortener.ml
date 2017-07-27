@@ -4,9 +4,20 @@ module Word_status = struct
   type t =
     | No_input
     | Pending
+    | Error of string
     | Word of string
 
   let is_pending t = t = Pending
+
+  let is_error = function
+    | Error _ -> true
+    | _ -> false
+  ;;
+
+  let is_success = function
+    | Word _ -> true
+    | _ -> false
+  ;;
 end
 
 module Model = struct
@@ -18,8 +29,9 @@ end
 module Msg = struct
   type t =
     | Submit_input
-    | Url       of string
-    | Short_url of string * string (* url, word *)
+    | Url           of string
+    | Short_url     of string * string (* url, word *)
+    | Error_message of string
   [@@bs.deriving {accessors}]
 end
 
@@ -60,8 +72,20 @@ let submit_input_cmd url =
   let handle_result =
     function
     | Ok (url, short_url) -> Msg.short_url url short_url
-    | Error e -> failwith (Tea.Http.string_of_error e) (* TODO show error
-                                                          message *)
+    | Error e ->
+      match e with
+      | BadStatus response ->
+        (match response.body with
+         | NoResponse -> Msg.error_message "there was an error"
+         | JsonResponse json ->
+           json
+           |> Js.Json.decodeObject
+           |> Option.bind ~f:(fun d -> Js.Dict.get d "error")
+           |> Option.bind ~f:Js.Json.decodeString
+           |> Option.value ~default:"missing error message"
+           |> Msg.error_message
+         | _ -> assert false)
+      | e -> failwith (Tea.Http.string_of_error e)
   in
   request
     { method'         = "POST"
@@ -91,6 +115,9 @@ let update (model : Model.t) msg =
       else model
     in
     ( model, Tea.Cmd.none )
+  | Error_message e ->
+    ( { model with word = Error e }
+    , Tea.Cmd.none)
 ;;
 
 let subscriptions _ = Tea.Sub.none
@@ -103,23 +130,30 @@ let view_short_url (word : Word_status.t) =
     match word with
     | No_input -> (noProp, noNode)
     | Pending  -> (noProp, text "pending...")
+    | Error e  -> (noProp, text e)
     | Word w   -> (href (current_href ^ "/" ^ w), text w)
   in
-  let muted_if_pending =
-    if Word_status.is_pending word
-    then (class' "text-muted")
-    else noProp
+  let text_class =
+    match word with
+    | No_input -> noProp
+    | Pending  -> class' "text-muted"
+    | Error _  -> class' "text-danger"
+    | Word _   -> noProp
   in
-  h2 [] [ a [ href; muted_if_pending ] [ text ] ]
+  h2 [] [ a [ href; text_class ] [ text ] ]
 ;;
 
 let view (model : Model.t) =
   let open Tea.Html in
   div []
     [ form [ class' "form"; Ev.submit_and_prevent_default Msg.submit_input ]
-        [ div [ class' "input-group" ]
+        [ div [ classList
+                  [ "input-group", true
+                  ; "has-error", Word_status.is_error model.word
+                  ; "has-success", Word_status.is_success model.word ] ]
             [ label [ class' "input-group-addon"; for' "url" ] [ text "URL" ]
-            ; input' [ id "url"; class' "form-control"
+            ; input' [ id "url"
+                     ; class' "form-control"
                      ; value model.url
                      ; autofocus true
                      ; Attributes.disabled (Word_status.is_pending model.word)

@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const URL          = require('url').URL;
 const bodyParser   = require('body-parser');
 const express      = require('express');
 const multer       = require('multer');
@@ -115,7 +116,13 @@ router.post('/link-clicks', (req, res) => {
 router.post('/u', (req, res) => {
   const { url } = req.body;
 
-  // TODO error when not a real URL, to avoid relative redirects
+  // If the URL isn't absolute or is malformed, reject.
+  try {
+    new URL(url);
+  } catch(e) {
+    res.status(400).json({ error: 'invalid URL' });
+    return;
+  }
 
   db.makeShortUrl(url)
     .then(({ word, url, expiry }) => {
@@ -127,7 +134,7 @@ router.post('/u', (req, res) => {
         });
     })
     .catch(db.NoAvailableWordsError, (e) => {
-      res.status(503).json(e);
+      res.status(503).json({ error: e.message });
     })
     .catch((e) => {
       log.error(e);
