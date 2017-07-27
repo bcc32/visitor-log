@@ -176,3 +176,6 @@ db.serialize(() => {
       .finally(() => selectUrl.resetAsync());
   };
 }
+
+// TODO add a recurring worker that cleans up expired links and returns words to
+// the [words] table
