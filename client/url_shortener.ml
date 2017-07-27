@@ -67,6 +67,7 @@ let submit_input_cmd url =
     else (
       match body with
       | JsonResponse json -> decode_response json
+      | NoResponse -> Error "empty response body"
       | _ -> assert false)
   in
   let handle_result =
