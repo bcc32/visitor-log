@@ -38,7 +38,7 @@ CREATE INDEX IF NOT EXISTS link_clicks_visitor_id ON link_clicks (
 );
 
 CREATE TABLE IF NOT EXISTS words (
-  word TEXT UNIQUE NOT NULL
+  word TEXT PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS urls (
