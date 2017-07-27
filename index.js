@@ -94,19 +94,23 @@ app.use(expressWinston.errorLogger({ winstonInstance: log }));
 http.createServer(app).listen(program.port);
 log.info('HTTP server started, listening on port %d', program.port);
 
+let httpsAvailable;
+
 try {
   const key = fs.readFileSync(program.keypath);
   const cert = fs.readFileSync(program.certpath);
   const credentials = { key, cert };
   https.createServer(credentials, app).listen(program.httpsPort);
   log.info('HTTPS server started, listening on port %d', program.httpsPort);
+  httpsAvailable = true;
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
+  httpsAvailable = false;
 }
 
 function requireHTTPS(req, res, next) {
-  if (!req.secure) {
+  if (httpsAvailable && !req.secure) {
     const target = {
       protocol: 'https:',
       hostname: req.hostname,
