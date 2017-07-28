@@ -3,28 +3,45 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve  from 'rollup-plugin-node-resolve';
 import uglify   from 'rollup-plugin-uglify';
 
-function rollup({ entry, dest }) {
-  const plugins = [
-    resolve(),
-    commonjs(),
-  ];
+const clientPlugins = [
+  resolve(),
+  commonjs(),
+];
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins.push(babel({
-      exclude: 'node_modules/**'
-    }));
-    plugins.push(uglify());
-  }
+if (process.env.NODE_ENV === 'production') {
+  clientPlugins.push(babel({
+    exclude: 'node_modules/**'
+  }));
+  clientPlugins.push(uglify());
+}
 
+function client(entry, dest) {
   return {
     entry,
     dest,
     format: 'iife',
-    plugins,
+    plugins: clientPlugins,
+  };
+}
+
+const serverPlugins = [
+  commonjs(),
+  babel({
+    exclude: 'node_modules/**'
+  }),
+];
+
+function server(entry, dest) {
+  return {
+    entry,
+    dest,
+    format: 'cjs',
+    plugins: serverPlugins,
   };
 }
 
 export default [
-  { entry: 'client/main.js', dest: 'dist/bundle.js' },
-  { entry: 'client/url-shortener.js', dest: 'dist/url-shortener.bundle.js' }
-].map(rollup);
+  client('client/main.js',          'dist/bundle.js' ),
+  client('client/url-shortener.js', 'dist/url-shortener.bundle.js'),
+  server('server/main.js',          'index.js'       )
+];
