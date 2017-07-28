@@ -118,7 +118,7 @@ let update (model : Model.t) msg =
     ( model, Tea.Cmd.none )
   | Error_message e ->
     ( { model with word = Error e }
-    , Tea.Cmd.none)
+    , Tea.Cmd.none )
 ;;
 
 let subscriptions _ = Tea.Sub.none
