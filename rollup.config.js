@@ -1,3 +1,4 @@
+import babel    from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve  from 'rollup-plugin-node-resolve';
 
@@ -6,9 +7,11 @@ function rollup({ entry, dest }) {
     entry,
     dest,
     format: 'iife',
-    sourceMap: true,
     plugins: [
       resolve({}),
+      babel({
+        exclude: 'node_modules/**'
+      }),
       commonjs(),
     ]
   };
