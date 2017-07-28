@@ -77,8 +77,6 @@ app.get('/u', (req, res) => {
 app.get('/u/:word', (req, res) => {
   const word = req.params.word;
 
-  console.dir(word);
-
   db.lookupShortUrl(word)
     .then((url) => {
       res.redirect(url);
