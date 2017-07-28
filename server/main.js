@@ -57,15 +57,16 @@ app.locals.basedir = __dirname;
 
 app.use(expressWinston.logger({ winstonInstance: log }));
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const ip = req.ip;
-  db.recordVisitor(ip)
-    .then((id) => { req.visitor_id = id; })
-    .then(next)
-    .catch((e) => {
-      log.error(e);
-      res.status(500).end();
-    });
+  try {
+    const id = await db.recordVisitor(ip);
+    req.visitor_id = id;
+    next();
+  } catch (e) {
+    log.error(e);
+    res.sendStatus(500);
+  }
 });
 
 app.get('/', (req, res) => {
@@ -76,20 +77,20 @@ app.get('/u', (req, res) => {
   res.render('url-shortener');
 });
 
-app.get('/u/:word', (req, res) => {
+app.get('/u/:word', async (req, res) => {
   const word = req.params.word;
 
-  urlShortener.lookup(word)
-    .then((url) => {
-      res.redirect(url);
-    })
-    .catch(UrlNotFoundError, () => {
+  try {
+    const url = await urlShortener.lookup(word);
+    res.redirect(url);
+  } catch (e) {
+    if (e instanceof UrlNotFoundError) {
       res.status(404).render('url-not-found', { word });
-    })
-    .catch((e) => {
+    } else {
       log.error(e);
       res.status(500).end();
-    });
+    }
+  }
 });
 
 app.use('/api', api);

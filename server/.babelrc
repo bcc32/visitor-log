@@ -4,5 +4,12 @@
       "modules": false
     }]
   ],
-  "plugins": ["external-helpers"]
+  "plugins": [
+    "external-helpers",
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }],
+    "transform-async-to-bluebird"
+  ]
 }

@@ -33,7 +33,7 @@ export default class API {
     const messageBus = new EventEmitter();
     messageBus.setMaxListeners(100);
 
-    router.get('/messages', (req, res) => {
+    router.get('/messages', async (req, res) => {
       const limit = req.query.limit;
 
       let reverse = true;
@@ -49,17 +49,16 @@ export default class API {
         }
       }
 
-      msg.getAll({ limit, reverse })
-        .then((messages) => {
-          res.status(200).json(messages);
-        })
-        .catch((e) => {
-          log.error(e);
-          res.sendStatus(500);
-        });
+      try {
+        const messages = await msg.getAll({ limit, reverse });
+        res.status(200).json(messages);
+      } catch (e) {
+        log.error(e);
+        res.sendStatus(500);
+      }
     });
 
-    router.post('/messages', (req, res) => {
+    router.post('/messages', async (req, res) => {
       if (req.body.message == null) {
         res.status(400).send('no message');
         return;
@@ -74,46 +73,46 @@ export default class API {
       const visitor_id = req.visitor_id;
       const data = { message, visitor_id };
 
-      msg.save(data)
-        .then((id) => {
-          data.id = id;
-          res.status(201).json(data);
-          messageBus.emit('update');
-        })
-        .catch((e) => {
-          log.error(e);
-          res.sendStatus(500);
-        });
+      try {
+        const id = await msg.save(data);
+        data.id = id;
+        res.status(201).json(data);
+        messageBus.emit('update');
+      } catch (e) {
+        log.error(e);
+        res.sendStatus(500);
+      }
     });
 
     router.get('/messages/update', (req, res) => {
       messageBus.once('update', () => res.sendStatus(204));
     });
 
-    router.get('/messages/:id', (req, res) => {
+    router.get('/messages/:id', async (req, res) => {
       const id = req.params.id;
-      msg.get(id)
-        .then((data) => {
-          res.status(200).json(data);
-        })
-        .catch((e) => {
-          log.error(e);
-          res.sendStatus(500);
-        });
+
+      try {
+        const data = await msg.get(id);
+        res.status(200).json(data);
+      } catch (e) {
+        log.error(e);
+        res.sendStatus(500);
+      }
     });
 
-    router.post('/link-clicks', (req, res) => {
+    router.post('/link-clicks', async (req, res) => {
       const { path, label, href } = req.body;
       const visitor_id = req.visitor_id;
-      db.recordLinkClick({ visitor_id, path, label, href })
-        .then(() => res.status(201).end())
-        .catch((e) => {
-          log.error(e);
-          res.sendStatus(500);
-        });
+      try {
+        await db.recordLinkClick({ visitor_id, path, label, href });
+        res.status(201).end();
+      } catch (e) {
+        log.error(e);
+        res.sendStatus(500);
+      }
     });
 
-    router.post('/u', (req, res) => {
+    router.post('/u', async (req, res) => {
       const { url } = req.body;
 
       // If the URL isn't absolute or is malformed, reject.
@@ -124,22 +123,17 @@ export default class API {
         return;
       }
 
-      urlShortener.shorten(url)
-        .then(({ word, url, expiry }) => {
-          res.status(201)
-            .json({
-              url,
-              word,
-              expiry
-            });
-        })
-        .catch(NoAvailableWordsError, (e) => {
+      try {
+        const data = await urlShortener.shorten(url);
+        res.status(201).json(data);
+      } catch (e) {
+        if (e instanceof NoAvailableWordsError) {
           res.status(503).json({ error: e.message });
-        })
-        .catch((e) => {
+        } else {
           log.error(e);
           res.sendStatus(500);
-        });
+        }
+      }
     });
 
     return router;

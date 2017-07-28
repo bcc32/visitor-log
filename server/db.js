@@ -81,7 +81,7 @@ export default class DB {
     }
   }
 
-  recordVisitor(ip) {
+  async recordVisitor(ip) {
     const conn = this.connect();
 
     const insert = conn.prepare(String.raw`
@@ -92,14 +92,17 @@ export default class DB {
       SELECT id FROM visitors WHERE ip = ?
     `);
 
-    return insert.runAsync(ip)
-      .then(() => select.getAsync(ip))
-      .get('id')
-      .finally(() => select.resetAsync())
-      .finally(() => conn.close());
+    try {
+      await insert.runAsync(ip);
+      const { id } = await select.getAsync(ip);
+      return id;
+    } finally {
+      await select.resetAsync();
+      conn.close();
+    }
   }
 
-  recordLinkClick({ visitor_id, path, label, href }) {
+  async recordLinkClick({ visitor_id, path, label, href }) {
     const conn = this.connect();
 
     const stmt = conn.prepare(String.raw`
@@ -107,12 +110,16 @@ export default class DB {
       VALUES ($timestamp, $visitor_id, $path, $label, $href)
     `);
 
-    return stmt.runAsync({
-      $visitor_id: visitor_id,
-      $path: path,
-      $label: label,
-      $href: href,
-      $timestamp: new Date().toISOString(),
-    }).finally(() => conn.close());
+    try {
+      await stmt.runAsync({
+        $visitor_id: visitor_id,
+        $path: path,
+        $label: label,
+        $href: href,
+        $timestamp: new Date().toISOString(),
+      });
+    } finally {
+      conn.close();
+    }
   }
 }

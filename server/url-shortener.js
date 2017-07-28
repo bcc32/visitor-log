@@ -21,7 +21,7 @@ export default class UrlShortener {
     this.db = db;
   }
 
-  shorten(url) {
+  async shorten(url) {
     const conn = this.db.connect();
 
     const begin = conn.prepare(String.raw`
@@ -55,38 +55,42 @@ export default class UrlShortener {
     expiry.setHours(expiry.getHours() + 1);
     expiry = expiry.toISOString();
 
-    return begin.runAsync()
-      .then(() => selectWord.getAsync())
-      .then((row) => {
-        if (row == null) {
-          throw new NoAvailableWordsError();
-        }
-        return row.word;
-      })
-      .tap((word) => deleteWord.runAsync({ $word: word }))
-      .tap((word) => insertNewUrl.runAsync({
+    try {
+      await begin.runAsync();
+
+      const row = await selectWord.getAsync();
+      if (row == null) {
+        throw new NoAvailableWordsError();
+      }
+      const word = row.word;
+
+      await deleteWord.runAsync({ $word: word });
+
+      await insertNewUrl.runAsync({
         $short_url: word,
         $url: url,
         $expiry: expiry,
-      }))
-      .tap(() => commit.runAsync())
-      .tapCatch((e) => {
-        this.log.error('rolling back transaction', e);
-        rollback.runAsync();
-      })
-      .then((word) => {
-        return {
-          word,
-          url,
-          expiry,
-        };
-      })
-      .finally(() => selectWord.resetAsync())
-      .finally(() => deleteWord.resetAsync())
-      .finally(() => conn.close());
+      });
+
+      await commit.runAsync();
+
+      return {
+        word,
+        url,
+        expiry,
+      };
+    } catch (e) {
+      this.log.error('rolling back transaction', e);
+      await rollback.runAsync();
+      throw e;
+    } finally {
+      await selectWord.resetAsync();
+      await deleteWord.resetAsync();
+      conn.close();
+    }
   }
 
-  lookup(word) {
+  async lookup(word) {
     const conn = this.db.connect();
 
     const stmt = conn.prepare(String.raw`
@@ -94,18 +98,19 @@ export default class UrlShortener {
       WHERE short_url = $short_url AND expiry >= $now
     `);
 
-    return stmt.getAsync({
-      $short_url: word,
-      $now: new Date().toISOString(),
-    })
-      .then((row) => {
-        if (row == null) {
-          throw new UrlNotFoundError(word);
-        }
-        return row.url;
-      })
-      .finally(() => stmt.resetAsync())
-      .finally(() => conn.close());
+    try {
+      const row = await stmt.getAsync({
+        $short_url: word,
+        $now: new Date().toISOString(),
+      });
+      if (row == null) {
+        throw new UrlNotFoundError(word);
+      }
+      return row.url;
+    } finally {
+      await stmt.resetAsync();
+      conn.close();
+    }
   }
 
   // TODO add a recurring worker that cleans up expired links and returns words to

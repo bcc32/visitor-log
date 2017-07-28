@@ -5,19 +5,22 @@ export default class Msg {
     this.db = db;
   }
 
-  get(id) {
+  async get(id) {
     const conn = this.db.connect();
 
-    const selectMessage = conn.prepare(String.raw`
+    const stmt = conn.prepare(String.raw`
       SELECT * FROM messages WHERE id = ?
     `);
 
-    return selectMessage.getAsync(id)
-      .finally(() => selectMessage.reset())
-      .finally(() => conn.close());
+    try {
+      return await stmt.getAsync(id);
+    } finally {
+      await stmt.resetAsync();
+      conn.close();
+    }
   }
 
-  getAll(opts) {
+  async getAll(opts) {
     const conn = this.db.connect();
 
     const { limit, reverse, since } = opts || {};
@@ -37,12 +40,15 @@ export default class Msg {
 
     values.$limit = limit || -1; // negative means no limit
 
-    return stmt.allAsync(values)
-      .finally(() => stmt.resetAsync())
-      .finally(() => conn.close());
+    try {
+      return await stmt.allAsync(values);
+    } finally {
+      await stmt.resetAsync();
+      conn.close();
+    }
   }
 
-  save({ message, visitor_id }) {
+  async save({ message, visitor_id }) {
     const conn = this.db.connect();
 
     const stmt = conn.prepare(String.raw`
@@ -56,13 +62,19 @@ export default class Msg {
       $timestamp: new Date().toISOString()
     };
 
-    return new Promise((resolve, reject) => {
-      stmt.run(values, function (err) {
-        if (err) return reject(err);
-        resolve(this.lastID);
+    try {
+      return await new Promise((resolve, reject) => {
+        stmt.run(values, function (err) {
+          if (err != null) {
+            reject(err);
+            return;
+          }
+          resolve(this.lastID);
+        });
       });
-    })
-      .finally(() => stmt.resetAsync())
-      .finally(() => conn.close());
+    } finally {
+      await stmt.resetAsync();
+      conn.close();
+    }
   }
 }
