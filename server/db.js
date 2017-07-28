@@ -92,7 +92,7 @@ export default class DB {
   }
 
   release(connection) {
-    if (this.connections.size < this.maxPoolSize) {
+    if (this.connections.length < this.maxPoolSize) {
       this.connections.push(connection);
     } else {
       connection.destroy();
