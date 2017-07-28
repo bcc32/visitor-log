@@ -1,28 +1,38 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
 
-const db = require('./db');
+export default class Msg {
+  constructor(db) {
+    // FIXME this is a hack to access the underlying SQLite3#Database object.
+    db = db.db;
 
-{
-  const sql = 'SELECT * FROM messages WHERE id = ?';
-  const stmt = db.prepare(sql);
+    this.selectMessage = db.prepare(String.raw`
+      SELECT * FROM messages WHERE id = ?
+    `);
 
-  module.exports.get = (id) => {
-    return stmt.getAsync(id)
-      .finally(() => stmt.reset());
-  };
-}
+    function getMessagesSinceStmt(direction) {
+      return db.prepare(String.raw`
+        SELECT * FROM messages
+        WHERE $timestamp IS NULL OR timestamp >= $timestamp
+        ORDER BY timestamp ${direction}
+        LIMIT $limit
+      `);
+    }
 
-{
-  const sql = (direction) => String.raw`
-    SELECT * FROM messages
-    WHERE $timestamp IS NULL OR timestamp >= $timestamp
-    ORDER BY timestamp ${direction}
-    LIMIT $limit
-  `;
-  const stmtAsc = db.prepare(sql('ASC'));
-  const stmtDesc = db.prepare(sql('DESC'));
+    this.selectMessagesAsc  = getMessagesSinceStmt('ASC');
+    this.selectMessagesDesc = getMessagesSinceStmt('DESC');
 
-  module.exports.getAll = (opts) => {
+    this.insertMessage = db.prepare(String.raw`
+      INSERT INTO messages (message, visitor_id, timestamp)
+      VALUES ($message, $visitor_id, $timestamp)
+    `);
+  }
+
+  get(id) {
+    return this.selectMessage.getAsync(id)
+      .finally(() => this.selectMessage.reset());
+  }
+
+  getAll(opts) {
     const { limit, reverse, since } = opts || {};
 
     const values = {};
@@ -31,22 +41,14 @@ const db = require('./db');
       values.$timestamp = since.toISOString();
     }
 
-    const stmt = reverse ? stmtDesc : stmtAsc;
+    const stmt = reverse ? this.selectMessagesDesc : this.selectMessagesAsc;
 
     values.$limit = limit || -1; // negative means no limit
 
     return stmt.allAsync(values);
-  };
-}
+  }
 
-{
-  const sql = String.raw`
-    INSERT INTO messages (message, visitor_id, timestamp)
-    VALUES ($message, $visitor_id, $timestamp)
-  `;
-  const stmt = db.prepare(sql);
-
-  module.exports.save = ({ message, visitor_id }) => {
+  save({ message, visitor_id }) {
     const values = {
       $message: message,
       $visitor_id: visitor_id,
@@ -54,10 +56,10 @@ const db = require('./db');
     };
 
     return new Promise((resolve, reject) => {
-      stmt.run(values, function (err) {
+      this.insertMessage.run(values, function (err) {
         if (err) return reject(err);
         resolve(this.lastID);
       });
     });
-  };
+  }
 }

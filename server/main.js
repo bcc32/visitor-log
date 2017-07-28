@@ -1,11 +1,17 @@
-const compression    = require('compression');
-const express        = require('express');
-const expressWinston = require('express-winston');
-const fs             = require('fs');
-const http           = require('http');
-const https          = require('https');
-const program        = global.program = require('commander');
-const url            = require('url');
+import compression    from 'compression';
+import express        from 'express';
+import expressWinston from 'express-winston';
+import fs             from 'fs';
+import http           from 'http';
+import https          from 'https';
+import program        from 'commander';
+import url            from 'url';
+
+import API from './api';
+import DB, { UrlNotFoundError } from './db';
+import Log from './log';
+import Msg from './msg';
+import { isProduction } from './common';
 
 function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
@@ -17,8 +23,6 @@ function parsePortNumberExn(input) {
   return n;
 }
 
-const isProduction = global.isProduction = process.env.NODE_ENV === 'production';
-
 program
   .version('0.1.2')
   .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, isProduction ?  80 : 8080)
@@ -29,9 +33,10 @@ program
   .option('-c --certpath <path>', 'specify SSL certificate file (default: ./server.pem)', './server.pem')
   .parse(process.argv);
 
-const api = require('./api');
-const db  = require('./db');
-const log = require('./log');
+const log = new Log(program.logDir);
+const db  = new DB(program.dbpath);
+const msg = new Msg(db);
+const api = new API({ log, db, msg });
 
 const app = express();
 app.use(compression());
@@ -74,11 +79,11 @@ app.get('/u/:word', (req, res) => {
 
   console.dir(word);
 
-  db.getShortUrl(word)
+  db.lookupShortUrl(word)
     .then((url) => {
       res.redirect(url);
     })
-    .catch(db.UrlNotFoundError, () => {
+    .catch(UrlNotFoundError, () => {
       res.status(404).render('url-not-found', { word });
     })
     .catch((e) => {

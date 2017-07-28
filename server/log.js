@@ -1,26 +1,31 @@
-const mkdirp = require('mkdirp');
-const path = require('path');
-const winston = require('winston');
-require('winston-daily-rotate-file');
+import mkdirp       from 'mkdirp';
+import path         from 'path';
 
-const logDir = global.program.logDir;
-mkdirp.sync(logDir);
+// winston exports a 'default' property so we use a namespace import to avoid
+// rollup problems.  cf. https://github.com/rollup/rollup/issues/1135
+import * as winston from 'winston';
+import 'winston-daily-rotate-file';
 
-const logger = new winston.Logger({
-  transports: [
-    new winston.transports.Console({ colorize: true }),
-    new winston.transports.DailyRotateFile({
-      level: global.isProduction ? 'info' : 'debug',
-      filename: path.join(logDir, 'log'),
-      datePattern: 'yyyy-MM-dd.',
-      prepend: true,
-    }),
-  ],
-});
+import { isProduction } from './common';
 
-module.exports = logger;
-module.exports.stream = {
-  write(msg) {
-    logger.info(msg.trim());
-  }
-};
+export default function Logger(logDir) {
+  mkdirp.sync(logDir);
+
+  return new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({ colorize: true }),
+      new (winston.transports.DailyRotateFile)({
+        level: isProduction ? 'info' : 'debug',
+        filename: path.join(logDir, 'log'),
+        datePattern: 'yyyy-MM-dd.',
+        prepend: true,
+      }),
+    ],
+  });
+
+  // logger.stream = {
+  //   write(msg) {
+  //     this.logger.info(msg.trim());
+  //   }
+  // };
+}

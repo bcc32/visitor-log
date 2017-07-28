@@ -42,6 +42,7 @@ data.db-*
 
 # Build output
 dist
+/index.js
 
 # SSL Key and Certificate
 server.key

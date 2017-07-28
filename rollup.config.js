@@ -25,7 +25,6 @@ function client(entry, dest) {
 }
 
 const serverPlugins = [
-  commonjs(),
   babel({
     exclude: 'node_modules/**'
   }),
