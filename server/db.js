@@ -26,8 +26,9 @@ export class UrlNotFoundError extends Error {
 }
 
 class Connection {
-  constructor(dbpath) {
-    this.db = new sqlite3.Database(dbpath);
+  constructor(dbpath, pool) {
+    this.db         = new sqlite3.Database(dbpath);
+    this.pool       = pool;
     this.statements = new Map();
   }
 
@@ -50,15 +51,15 @@ class Connection {
   }
 
   close() {
-    // TODO return connection to pool
-    this.destroy();
+    this.pool.release(this);
   }
 }
 
 export default class DB {
   constructor(log, dbpath) {
-    this.log = log;
+    this.log    = log;
     this.dbpath = dbpath;
+    this.maxConnections = 5;
 
     mkdirp.sync(dirname(dbpath));
 
@@ -78,11 +79,24 @@ export default class DB {
     });
 
     db.close();
+
+    this.connections = [];
   }
 
   connect() {
-    // TODO pool connections
-    return new Connection(this.dbpath);
+    let connection = this.connections.shift();
+    if (typeof connection === 'undefined') {
+      connection = new Connection(this.dbpath, this);
+    }
+    return connection;
+  }
+
+  release(connection) {
+    if (this.connections.size >= this.maxConnections) {
+      connection.destroy();
+      return;
+    }
+    this.connections.push(connection);
   }
 
   recordVisitor(ip) {
