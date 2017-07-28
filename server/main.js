@@ -48,7 +48,7 @@ const staticOpts = {
 app.use(express.static('./dist', staticOpts));
 app.use(express.static('./public', staticOpts));
 
-app.use(requireHTTPS);
+app.use(redirectToHTTPS);
 
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
@@ -97,7 +97,7 @@ app.use(expressWinston.errorLogger({ winstonInstance: log }));
 http.createServer(app).listen(program.port);
 log.info('HTTP server started, listening on port %d', program.port);
 
-let httpsAvailable;
+let httpsAvailable = true;
 
 try {
   const key = fs.readFileSync(program.keypath);
@@ -105,14 +105,13 @@ try {
   const credentials = { key, cert };
   https.createServer(credentials, app).listen(program.httpsPort);
   log.info('HTTPS server started, listening on port %d', program.httpsPort);
-  httpsAvailable = true;
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
   httpsAvailable = false;
 }
 
-function requireHTTPS(req, res, next) {
+function redirectToHTTPS(req, res, next) {
   if (httpsAvailable && !req.secure) {
     const target = {
       protocol: 'https:',
