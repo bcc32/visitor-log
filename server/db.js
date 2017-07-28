@@ -4,8 +4,6 @@ import fs          from 'fs';
 import mkdirp      from 'mkdirp';
 import sqlite3     from 'sqlite3';
 
-import log from './log';
-
 Promise.promisifyAll(sqlite3.Database.prototype);
 Promise.promisifyAll(sqlite3.Statement.prototype);
 
@@ -28,9 +26,11 @@ export class UrlNotFoundError extends Error {
 }
 
 export default class DB {
-  constructor(dbpath) {
+  constructor(log, dbpath) {
     mkdirp.sync(dirname(dbpath));
     const db = this.db = new sqlite3.Database(dbpath);
+
+    this.log = log;
 
     const schema = fs.readFileSync('schema.sql');
 
@@ -46,7 +46,7 @@ export default class DB {
     db.serialize(() => {
       db.execAsync(init)
         .catch((e) => {
-          log.error('Error initializing database: ', e);
+          this.log.error('Error initializing database: ', e);
           process.exit(1);
         });
     });
@@ -139,7 +139,7 @@ export default class DB {
       }))
       .tap(() => this.commitTransaction.runAsync())
       .tapCatch((e) => {
-        log.error('rolling back transaction', e);
+        this.log.error('rolling back transaction', e);
         this.rollbackTransaction.runAsync();
       })
       .then((word) => {

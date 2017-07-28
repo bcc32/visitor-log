@@ -34,7 +34,7 @@ program
   .parse(process.argv);
 
 const log = new Log(program.logDir);
-const db  = new DB(program.dbpath);
+const db  = new DB(log, program.dbpath);
 const msg = new Msg(db);
 const api = new API({ log, db, msg });
 
