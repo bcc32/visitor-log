@@ -59,7 +59,9 @@ export default class DB {
   constructor(log, dbpath) {
     this.log    = log;
     this.dbpath = dbpath;
-    this.maxConnections = 5;
+
+    this.connections = [];
+    this.maxPoolSize = 5;
 
     mkdirp.sync(dirname(dbpath));
 
@@ -79,8 +81,6 @@ export default class DB {
     });
 
     db.close();
-
-    this.connections = [];
   }
 
   connect() {
@@ -92,11 +92,11 @@ export default class DB {
   }
 
   release(connection) {
-    if (this.connections.size >= this.maxConnections) {
+    if (this.connections.size < this.maxPoolSize) {
+      this.connections.push(connection);
+    } else {
       connection.destroy();
-      return;
     }
-    this.connections.push(connection);
   }
 
   recordVisitor(ip) {
