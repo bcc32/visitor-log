@@ -8,9 +8,10 @@ import program        from 'commander';
 import url            from 'url';
 
 import API from './api';
-import DB, { UrlNotFoundError } from './db';
+import DB  from './db';
 import Log from './log';
 import Msg from './msg';
+import UrlShortener, { UrlNotFoundError } from './url-shortener';
 import { isProduction } from './common';
 
 function parsePortNumberExn(input) {
@@ -36,7 +37,8 @@ program
 const log = new Log(program.logDir);
 const db  = new DB(log, program.dbpath);
 const msg = new Msg(db);
-const api = new API({ log, db, msg });
+const urlShortener = new UrlShortener(db);
+const api = new API({ log, db, msg, urlShortener });
 
 const app = express();
 app.use(compression());
@@ -77,7 +79,7 @@ app.get('/u', (req, res) => {
 app.get('/u/:word', (req, res) => {
   const word = req.params.word;
 
-  db.lookupShortUrl(word)
+  urlShortener.lookup(word)
     .then((url) => {
       res.redirect(url);
     })

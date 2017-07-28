@@ -4,10 +4,10 @@ import bodyParser   from 'body-parser';
 import express      from 'express';
 import multer       from 'multer';
 
-import { NoAvailableWordsError } from './db';
+import { NoAvailableWordsError } from './url-shortener';
 
 export default class API {
-  constructor({ log, db, msg }) {
+  constructor({ log, db, msg, urlShortener }) {
     const router = express.Router();
 
     router.use(bodyParser.urlencoded({ extended: false }));
@@ -124,7 +124,7 @@ export default class API {
         return;
       }
 
-      db.makeShortUrl(url)
+      urlShortener.shorten(url)
         .then(({ word, url, expiry }) => {
           res.status(201)
             .json({
