@@ -131,7 +131,10 @@ let view_short_url (word : Word_status.t) =
     match word with
     | No_input -> (noProp, noNode)
     | Pending  -> (noProp, text "pending...")
-    | Error e  -> (noProp, text e)
+    | Error e  -> (noProp, text e) (* TODO this sets the attribute to the string
+                                      "undefined" if the prop was formerly
+                                      something other than [noProp]. Report
+                                      upstream. *)
     | Word w   -> (href (current_href ^ "/" ^ w), text w)
   in
   let text_class =
