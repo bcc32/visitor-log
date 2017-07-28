@@ -19,6 +19,9 @@ export class UrlNotFoundError extends Error {
 export default class UrlShortener {
   constructor(db) {
     this.db = db;
+
+    // TODO add a recurring worker that cleans up expired links and returns words to
+    // the [words] table
   }
 
   async shorten(url) {
@@ -112,7 +115,4 @@ export default class UrlShortener {
       conn.close();
     }
   }
-
-  // TODO add a recurring worker that cleans up expired links and returns words to
-  // the [words] table
 }
