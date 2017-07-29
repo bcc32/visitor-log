@@ -149,6 +149,7 @@ let view_short_url (word : Word_status.t) =
 
 let view (model : Model.t) =
   let open Tea.Html in
+  let disabled_attr = Attributes.disabled (Word_status.is_pending model.word) in
   div []
     [ form [ class' "form"; Ev.submit_and_prevent_default Msg.submit_input ]
         [ div [ classList
@@ -160,12 +161,13 @@ let view (model : Model.t) =
                      ; class' "form-control"
                      ; value model.url
                      ; autofocus true
-                     ; Attributes.disabled (Word_status.is_pending model.word)
+                     ; disabled_attr
                      ; onInput Msg.url ] []
             ; span [ class' "input-group-btn" ]
                 [ button [ class' "btn btn-primary"
                          ; type' "button"
-                         ; onClick Msg.submit_input ]
+                         ; onClick Msg.submit_input
+                         ; disabled_attr ]
                     [ text "Go!" ] ] ] ]
     ; view_short_url model.word ]
 ;;
