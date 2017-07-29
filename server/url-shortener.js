@@ -58,25 +58,15 @@ export default class UrlShortener {
 
     try {
       await insertWords.runAsync({ $expiry });
-
-      const changes = await new Promise((resolve, reject) => {
-        deleteUrls.run({ $expiry }, function (err, result) {
-          if (err != null) {
-            reject(err);
-            return;
-          }
-          resolve(this.changes);
-        });
-      });
-
+      await deleteUrls.runAsync({ $expiry });
       await commit.runAsync();
 
+      const changes = deleteUrls.changes;
       this.log.info('cleaned up %d expired URLs', changes);
     } catch (e) {
       this.log.error(e);
       await rollback.runAsync();
     } finally {
-      // reset insertWords or deleteUrls?
       conn.close();
     }
   }

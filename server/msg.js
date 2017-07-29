@@ -1,5 +1,3 @@
-import Promise from 'bluebird';
-
 export default class Msg {
   constructor(db) {
     this.db = db;
@@ -56,22 +54,14 @@ export default class Msg {
       VALUES ($message, $visitor_id, $timestamp)
     `);
 
-    const values = {
-      $message: message,
-      $visitor_id: visitor_id,
-      $timestamp: new Date().toISOString()
-    };
-
     try {
-      return await new Promise((resolve, reject) => {
-        stmt.run(values, function (err) {
-          if (err != null) {
-            reject(err);
-            return;
-          }
-          resolve(this.lastID);
-        });
+      await stmt.runAsync({
+        $message: message,
+        $visitor_id: visitor_id,
+        $timestamp: new Date().toISOString()
       });
+
+      return stmt.lastID;
     } finally {
       await stmt.resetAsync();
       conn.close();
