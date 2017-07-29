@@ -135,7 +135,9 @@ let view_short_url (word : Word_status.t) =
                                       "undefined" if the prop was formerly
                                       something other than [noProp]. Report
                                       upstream. *)
-    | Word w   -> (href (current_href ^ "/" ^ w), text w)
+    | Word w   ->
+      let url = current_href ^ "/" ^ w in
+      (href url, text url)
   in
   let text_class =
     match word with
