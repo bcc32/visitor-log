@@ -28,8 +28,6 @@ export default class UrlShortener {
   }
 
   async cleanupExpired() {
-    this.log.verbose('cleaning up expired urls');
-
     const conn = this.db.connect();
 
     const begin = conn.prepare(String.raw`
@@ -90,10 +88,13 @@ export default class UrlShortener {
       BEGIN TRANSACTION
     `);
 
+    const countWords = conn.prepare(String.raw`
+      SELECT COUNT(*) AS num_words FROM words
+    `);
+
     const selectWord = conn.prepare(String.raw`
-      SELECT word FROM (SELECT word FROM words LIMIT 100)
-      ORDER BY RANDOM()
-      LIMIT 1
+      SELECT word FROM words
+      LIMIT 1 OFFSET $index
     `);
 
     const deleteWord = conn.prepare(String.raw`
@@ -120,11 +121,13 @@ export default class UrlShortener {
     try {
       await begin.runAsync();
 
-      const row = await selectWord.getAsync();
-      if (row == null) {
+      const { num_words } = await countWords.getAsync();
+      if (num_words === 0) {
         throw new NoAvailableWordsError();
       }
-      const word = row.word;
+
+      const $index = Math.floor(num_words * Math.random());
+      const { word } = await selectWord.getAsync({ $index });
 
       await deleteWord.runAsync({ $word: word });
 
@@ -142,10 +145,12 @@ export default class UrlShortener {
         expiry,
       };
     } catch (e) {
-      this.log.error('rolling back transaction', e);
+      this.log.error(e);
+      this.log.warn('rolling back transaction');
       await rollback.runAsync();
       throw e;
     } finally {
+      await countWords.resetAsync();
       await selectWord.resetAsync();
       await deleteWord.resetAsync();
       conn.close();
