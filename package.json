@@ -1,6 +1,6 @@
 {
   "name": "visitor-log",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Records visitors to the site and allows them to post messages",
   "main": "server/main.js",
   "scripts": {
