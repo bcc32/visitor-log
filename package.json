@@ -2,7 +2,7 @@
   "name": "visitor-log",
   "version": "0.3.3",
   "description": "Records visitors to the site and allows them to post messages",
-  "main": "server/main.js",
+  "main": "index.js",
   "scripts": {
     "build:bsb": "bsb -make-world",
     "build:rollup": "rollup -c",
