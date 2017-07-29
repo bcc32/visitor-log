@@ -33,7 +33,7 @@ export default class Msg {
 
     const stmt = conn.prepare(String.raw`
       SELECT * FROM messages
-      WHERE $timestamp IS NULL OR timestamp >= $timestamp
+      WHERE hidden = 0 AND ($timestamp IS NULL OR timestamp >= $timestamp)
       ORDER BY timestamp ${reverse ? 'DESC' : 'ASC'}
       LIMIT $limit
     `);

@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS messages (
   id INTEGER PRIMARY KEY,
   timestamp TEXT NOT NULL,
   visitor_id INTEGER NOT NULL REFERENCES visitors,
-  message TEXT NOT NULL
+  message TEXT NOT NULL,
+  hidden INTEGER NOT NULL DEFAULT 0 CHECK (hidden BETWEEN 0 AND 1)
 );
 
 CREATE INDEX IF NOT EXISTS messages_timestamp ON messages (
