@@ -37,7 +37,7 @@ program
 const log = new Log(program.logDir);
 const db  = new DB(log, program.dbpath);
 const msg = new Msg(db);
-const urlShortener = new UrlShortener(db);
+const urlShortener = new UrlShortener(log, db);
 const api = new API({ log, db, msg, urlShortener });
 
 const app = express();

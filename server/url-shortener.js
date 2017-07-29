@@ -17,11 +17,70 @@ export class UrlNotFoundError extends Error {
 }
 
 export default class UrlShortener {
-  constructor(db) {
-    this.db = db;
+  constructor(log, db) {
+    this.log = log;
+    this.db  = db;
 
-    // TODO add a recurring worker that cleans up expired links and returns words to
-    // the [words] table
+    // Every hour, clean up expired URLs
+    setInterval(() => {
+      this.cleanupExpired();
+    }, 3600 * 1000);
+  }
+
+  async cleanupExpired() {
+    this.log.verbose('cleaning up expired urls');
+
+    const conn = this.db.connect();
+
+    const begin = conn.prepare(String.raw`
+      BEGIN IMMEDIATE TRANSACTION
+    `);
+
+    const insertWords = conn.prepare(String.raw`
+      INSERT INTO words
+      SELECT short_url FROM urls
+      WHERE expiry < $expiry
+    `);
+
+    const deleteUrls = conn.prepare(String.raw`
+      DELETE FROM urls WHERE expiry < $expiry
+    `);
+
+    const commit = conn.prepare(String.raw`
+      COMMIT TRANSACTION
+    `);
+
+    const rollback = conn.prepare(String.raw`
+      ROLLBACK TRANSACTION
+    `);
+
+    await begin.runAsync();
+
+    const $expiry = new Date().toISOString();
+
+    try {
+      await insertWords.runAsync({ $expiry });
+
+      const changes = await new Promise((resolve, reject) => {
+        deleteUrls.run({ $expiry }, function (err, result) {
+          if (err != null) {
+            reject(err);
+            return;
+          }
+          resolve(this.changes);
+        });
+      });
+
+      await commit.runAsync();
+
+      this.log.info('cleaned up %d expired URLs', changes);
+    } catch (e) {
+      this.log.error(e);
+      await rollback.runAsync();
+    } finally {
+      // reset insertWords or deleteUrls?
+      conn.close();
+    }
   }
 
   async shorten(url) {
