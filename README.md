@@ -18,6 +18,6 @@ npm run dev
 
 ```sh
 npm install
-npm run build -- -p
-npm start
+NODE_ENV=production npm run build
+NODE_ENV=production npm start
 ```
