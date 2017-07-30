@@ -25,8 +25,10 @@ function parsePortNumberExn(input) {
   return n;
 }
 
+import { version } from '../package.json';
+
 program
-  .version('0.1.2')
+  .version(version)
   .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, isProduction ?  80 : 8080)
   .option('-s --https-port <n>' , 'specify HTTPS port number (default: 443/8443)'       , parsePortNumberExn, isProduction ? 443 : 8443)
   .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
