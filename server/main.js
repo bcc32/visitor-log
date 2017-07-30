@@ -132,7 +132,7 @@ try {
 const io = socket(servers[servers.length - 1]);
 servers.push(io);
 
-const socketAPI = new SocketAPI({ api, io, msg });
+new SocketAPI({ api, io, msg });
 
 function redirectToHTTPS(req, res, next) {
   if (httpsAvailable && !req.secure) {
