@@ -1,7 +1,7 @@
 {
-  "name": "visitor-log",
+  "name": "bcc32.com",
   "version": "0.3.3",
-  "description": "Records visitors to the site and allows them to post messages",
+  "description": "bcc32's personal website",
   "main": "index.js",
   "scripts": {
     "build:bsb": "bsb -make-world",
