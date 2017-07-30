@@ -64,10 +64,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bcc32/visitor-log.git"
+    "url": "git+https://github.com/bcc32/bcc32.git"
   },
   "bugs": {
-    "url": "https://github.com/bcc32/visitor-log/issues"
+    "url": "https://github.com/bcc32/bcc32.com/issues"
   },
-  "homepage": "https://github.com/bcc32/visitor-log#readme"
+  "homepage": "https://github.com/bcc32/bcc32.com#bcc32com"
 }
