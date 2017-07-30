@@ -1,7 +1,7 @@
 type t
 
 val create
-  :  ?namespace:string
+  :  ?namespace:string          (* default is "/" *)
   -> unit
   -> t
 
