@@ -122,7 +122,7 @@ try {
   });
   servers.push(httpsServer);
 } catch (e) {
-  log.warn('Could not load SSL key/certificate: %s', e);
+  log.error('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
   httpsAvailable = false;
 }
