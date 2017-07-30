@@ -3,6 +3,7 @@ import compression    from 'compression';
 import express        from 'express';
 import expressWinston from 'express-winston';
 import fs             from 'fs';
+import helmet         from 'helmet';
 import http           from 'http';
 import https          from 'https';
 import program        from 'commander';
@@ -44,6 +45,7 @@ const urlShortener = new UrlShortener(log, db);
 const api = new API({ log, db, msg, urlShortener });
 
 const app = express();
+app.use(helmet());
 app.use(compression());
 
 const staticOpts = {
