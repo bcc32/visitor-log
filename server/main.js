@@ -7,12 +7,14 @@ import helmet         from 'helmet';
 import http           from 'http';
 import https          from 'https';
 import program        from 'commander';
+import socket         from 'socket.io';
 import url            from 'url';
 
 import API from './api';
 import DB  from './db';
 import Log from './log';
 import Msg from './msg';
+import SocketAPI from './socket-api';
 import UrlShortener, { UrlNotFoundError } from './url-shortener';
 import { isProduction } from './common';
 
@@ -127,6 +129,10 @@ try {
   httpsAvailable = false;
 }
 
+const io = socket(servers[servers.length - 1]);
+
+const socketAPI = new SocketAPI({ api, io, msg });
+
 function redirectToHTTPS(req, res, next) {
   if (httpsAvailable && !req.secure) {
     const target = {
@@ -156,9 +162,7 @@ async function shutdown() {
   });
 
   try {
-    servers.forEach((s) => s.close());
-
-    api.close();
+    await socketAPI.close();
     urlShortener.close();
     db.close();
 

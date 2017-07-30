@@ -55,13 +55,20 @@ export default class Msg {
     `);
 
     try {
+      const timestamp = new Date().toISOString();
+
       await stmt.runAsync({
         $message: message,
         $visitor_id: visitor_id,
-        $timestamp: new Date().toISOString()
+        $timestamp: timestamp,
       });
 
-      return stmt.lastID;
+      return {
+        id: stmt.lastID,
+        timestamp,
+        visitor_id,
+        message,
+      };
     } finally {
       await stmt.resetAsync();
       conn.close();

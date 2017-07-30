@@ -5,14 +5,15 @@ module Model = struct
     { input          : string
     ; messages       : Message.t list
     ; has_error      : bool    (* last server request responded with an error *)
-    ; update_pending : bool }
+    ; socket         : Socket.t }
 end
 
 module Msg = struct
   type t =
-    | Input          of string
-    | Message_list   of (Message.t list, Error.t) Result.t
-    | Message_update of (unit          , Error.t) Result.t
+    | Input        of string
+    | Message_list of (Message.t list, Error.t) Result.t
+    | Message      of Message.t
+    | No_op
     | Poll
     | Submit_input
   [@@bs.deriving {accessors}]
@@ -40,20 +41,13 @@ let get_messages =
   |> Tea.Http.send handle_response
 ;;
 
-let get_update =
-  Tea.Http.getString "/api/messages/update"
-  |> Tea.Http.send (function
-    | Ok _ -> Msg.message_update Result.ok_unit
-    | Error e -> Msg.message_update (Error (Error.of_http_error e)))
-;;
-
 let init () =
   ( { Model.
       input          = ""
     ; messages       = []
     ; has_error      = false
-    ; update_pending = false }
-  , get_messages )
+    ; socket         = Socket.create () ~namespace:"/messages" }
+  , Tea.Cmd.none )
 ;;
 
 let decode_response _json = Ok ()
@@ -71,7 +65,7 @@ let submit_cmd message =
   in
   let handle_result result =
     match result with
-    | Ok () -> Msg.poll
+    | Ok () -> Msg.no_op
     | Error e -> failwith (Tea.Http.string_of_error e) (* TODO think about what to do in error case *)
   in
   request
@@ -86,27 +80,37 @@ let submit_cmd message =
 ;;
 
 let update (model : Model.t) msg =
-  let (model, cmd) =
-    match (msg : Msg.t) with
-    | Input input -> ({ model with input }, Tea.Cmd.none)
-    | Message_list (Error _) -> ({ model with has_error = true }, Tea.Cmd.none) (* TODO show error *)
-    | Message_list (Ok messages) -> ({ model with has_error = false; messages }, Tea.Cmd.none)
-    | Message_update (Error _) -> ({ model with has_error = true; update_pending = false }, Tea.Cmd.none)
-    | Message_update (Ok _) -> ({ model with has_error = false; update_pending = false }, get_messages)
-    | Poll -> (model, get_messages)
-    | Submit_input -> ({ model with input = "" }, submit_cmd model.input)
-  in
-  let (maybe_update, update_pending) =
-    if not model.has_error && not model.update_pending
-    then (get_update, true)
-    else (Tea.Cmd.none, model.update_pending)
-  in
-  ( { model with update_pending }
-  , Tea.Cmd.batch [ cmd; maybe_update ] )
+  match (msg : Msg.t) with
+  | Input input -> ({ model with input }, Tea.Cmd.none)
+  | Message_list (Error _) -> ({ model with has_error = true }, Tea.Cmd.none) (* TODO show error *)
+  | Message_list (Ok messages) -> ({ model with has_error = false; messages }, Tea.Cmd.none)
+  | Message msg -> ({ model with messages = msg :: model.messages }, Tea.Cmd.none)
+  | No_op -> (model, Tea.Cmd.none)
+  | Poll -> (model, get_messages)
+  | Submit_input -> ({ model with input = "" }, submit_cmd model.input)
 ;;
 
-let subscriptions _ =
-  Tea.Time.(every (30.0 *. second) (fun _ -> Msg.poll))
+type message_list
+external message_list_length : message_list -> int = "length" [@@bs.get]
+external message_list_get    : message_list -> int -> Message.js_t = "" [@@bs.get_index]
+
+let message_list_of_message_list message_list =
+  let length = message_list_length message_list in
+  Array.init length (fun i -> message_list_get message_list i |> Message.of_js)
+  |> Array.to_list
+;;
+
+let subscriptions (model : Model.t) =
+  Tea.Sub.batch
+    [ Tea.Time.(every (30.0 *. second) (fun _ -> Msg.poll))
+    ; Socket.sub model.socket ~name:"messages" ~f:(fun msg ->
+        let msg = (Obj.magic msg : message_list) in (* FIXME get rid of Obj.magic here and below *)
+        let msg = message_list_of_message_list msg in
+        Msg.message_list (Ok msg))
+    ; Socket.sub model.socket ~name:"message" ~f:(fun msg ->
+        let msg = (Obj.magic msg : Message.js_t) in
+        let msg = Message.of_js msg in
+        Msg.message msg) ]
 ;;
 
 let header_row =

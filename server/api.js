@@ -6,8 +6,10 @@ import multer       from 'multer';
 
 import { NoAvailableWordsError } from './url-shortener';
 
-export default class API {
+export default class API extends EventEmitter {
   constructor({ log, db, msg, urlShortener }) {
+    super();
+
     const router = express.Router();
     this.router = router;
 
@@ -30,9 +32,6 @@ export default class API {
       const data = { type: 'pong', nonce };
       res.status(200).send(`${callback}(${JSON.stringify(data)})`);
     });
-
-    this.messageBus = new EventEmitter();
-    this.messageBus.setMaxListeners(100);
 
     router.get('/messages', async (req, res) => {
       const limit = req.query.limit;
@@ -75,20 +74,13 @@ export default class API {
       const data = { message, visitor_id };
 
       try {
-        const id = await msg.save(data);
-        data.id = id;
-        res.status(201).json(data);
-        this.messageBus.emit('update');
+        const savedMsg = await msg.save(data);
+        res.status(201).json(savedMsg);
+        this.emit('message', savedMsg);
       } catch (e) {
         log.error(e);
         res.sendStatus(500);
       }
-    });
-
-    // TODO long poll is icky and unfun for server shutdown. Consider switching
-    // to something like WebSockets or Socket.IO.
-    router.get('/messages/update', (req, res) => {
-      this.messageBus.once('update', () => res.sendStatus(204));
     });
 
     router.get('/messages/:id', async (req, res) => {
@@ -138,10 +130,5 @@ export default class API {
         }
       }
     });
-  }
-
-  close() {
-    // kick off all waiting clients
-    this.messageBus.emit('update');
   }
 }

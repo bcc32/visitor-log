@@ -1,6 +1,8 @@
 extends layout.pug
 
 block content
+  // TODO figure out how to get this to work with rollup
+  script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
   script(type='text/javascript', src='bundle.js')
 
   h1 Welcome
