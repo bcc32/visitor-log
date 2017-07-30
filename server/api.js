@@ -85,6 +85,8 @@ export default class API {
       }
     });
 
+    // TODO long poll is icky and unfun for server shutdown. Consider switching
+    // to something like WebSockets or Socket.IO.
     router.get('/messages/update', (req, res) => {
       this.messageBus.once('update', () => res.sendStatus(204));
     });

@@ -102,8 +102,10 @@ app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
 const servers = [];
 
-const httpServer = http.createServer(app).listen(program.port);
-log.info('HTTP server started, listening on port %d', program.port);
+const httpServer = http.createServer(app);
+httpServer.listen(program.port, () => {
+  log.info('HTTP server started on port %d', program.port);
+});
 servers.push(httpServer);
 
 let httpsAvailable = true;
@@ -112,8 +114,10 @@ try {
   const key = fs.readFileSync(program.keypath);
   const cert = fs.readFileSync(program.certpath);
   const credentials = { key, cert };
-  const httpsServer = https.createServer(credentials, app).listen(program.httpsPort);
-  log.info('HTTPS server started, listening on port %d', program.httpsPort);
+  const httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(program.httpsPort, () => {
+    log.info('HTTPS server started on port %d', program.httpsPort);
+  });
   servers.push(httpsServer);
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
