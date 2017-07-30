@@ -19,5 +19,5 @@ npm run dev
 ```sh
 npm install
 NODE_ENV=production npm run build
-NODE_ENV=production npm start
+npm start
 ```
