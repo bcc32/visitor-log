@@ -4,7 +4,6 @@ module Model = struct
   type t =
     { input          : string
     ; messages       : Message.t list
-    ; has_error      : bool    (* last server request responded with an error *)
     ; socket         : Socket.t }
 end
 
@@ -14,38 +13,14 @@ module Msg = struct
     | Message_list of (Message.t list, Error.t) Result.t
     | Message      of Message.t
     | No_op
-    | Poll
     | Submit_input
   [@@bs.deriving {accessors}]
 end
-
-let get_messages =
-  let handle_response result =
-    Msg.message_list (
-      match result with
-      | Error e -> Error (Error.of_http_error e)
-      | Ok s ->
-        match s |> Js.Json.parseExn |> Js.Json.decodeArray with
-        | exception _ -> Error (Error.of_string "not JSON")
-        | None -> Error (Error.of_string "not an array")
-        | Some jsons ->
-          jsons
-          |> Array.to_list
-          |> List.map (fun json ->
-            match Message.of_json json with
-            | None -> Error (Error.of_string "could not parse message")
-            | Some msg -> Ok msg)
-          |> Result.all)
-  in
-  Tea.Http.getString "/api/messages"
-  |> Tea.Http.send handle_response
-;;
 
 let init () =
   ( { Model.
       input          = ""
     ; messages       = []
-    ; has_error      = false
     ; socket         = Socket.create () ~namespace:"/messages" }
   , Tea.Cmd.none )
 ;;
@@ -79,14 +54,13 @@ let submit_cmd message =
   |> send handle_result
 ;;
 
-let update (model : Model.t) msg =
+let rec update (model : Model.t) msg =
   match (msg : Msg.t) with
   | Input input -> ({ model with input }, Tea.Cmd.none)
-  | Message_list (Error _) -> ({ model with has_error = true }, Tea.Cmd.none) (* TODO show error *)
-  | Message_list (Ok messages) -> ({ model with has_error = false; messages }, Tea.Cmd.none)
+  | Message_list (Error _) -> update model No_op
+  | Message_list (Ok messages) -> ({ model with messages }, Tea.Cmd.none)
   | Message msg -> ({ model with messages = msg :: model.messages }, Tea.Cmd.none)
   | No_op -> (model, Tea.Cmd.none)
-  | Poll -> (model, get_messages)
   | Submit_input -> ({ model with input = "" }, submit_cmd model.input)
 ;;
 
@@ -102,8 +76,7 @@ let message_list_of_message_list message_list =
 
 let subscriptions (model : Model.t) =
   Tea.Sub.batch
-    [ Tea.Time.(every (30.0 *. second) (fun _ -> Msg.poll))
-    ; Socket.sub model.socket ~name:"messages" ~f:(fun msg ->
+    [ Socket.sub model.socket ~name:"messages" ~f:(fun msg ->
         let msg = (Obj.magic msg : message_list) in (* FIXME get rid of Obj.magic here and below *)
         let msg = message_list_of_message_list msg in
         Msg.message_list (Ok msg))
