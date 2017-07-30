@@ -24,6 +24,6 @@ export default class SocketAPI {
 
   async handle(socket) {
     const messages = await this.msg.getAll({ reverse: true });
-    this.ns.emit('messages', messages);
+    socket.emit('messages', messages);
   }
 }

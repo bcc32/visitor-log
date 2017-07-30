@@ -77,7 +77,8 @@ let message_list_of_message_list message_list =
 let subscriptions (model : Model.t) =
   Tea.Sub.batch
     [ Socket.sub model.socket ~name:"messages" ~f:(fun msg ->
-        let msg = (Obj.magic msg : message_list) in (* FIXME get rid of Obj.magic here and below *)
+        (* FIXME get rid of Obj.magic here and below *)
+        let msg = (Obj.magic msg : message_list) in
         let msg = message_list_of_message_list msg in
         Msg.message_list (Ok msg))
     ; Socket.sub model.socket ~name:"message" ~f:(fun msg ->
