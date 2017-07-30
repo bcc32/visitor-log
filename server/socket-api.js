@@ -16,12 +16,6 @@ export default class SocketAPI {
     });
   }
 
-  async close() {
-    await Promise.fromCallback((cb) => {
-      this.io.close(cb);
-    });
-  }
-
   async handle(socket) {
     const messages = await this.msg.getAll({ reverse: true });
     socket.emit('messages', messages);

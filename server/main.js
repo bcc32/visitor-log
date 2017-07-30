@@ -130,6 +130,7 @@ try {
 }
 
 const io = socket(servers[servers.length - 1]);
+servers.push(io);
 
 const socketAPI = new SocketAPI({ api, io, msg });
 
@@ -162,7 +163,6 @@ async function shutdown() {
   });
 
   try {
-    await socketAPI.close();
     urlShortener.close();
     db.close();
 
@@ -183,3 +183,4 @@ process.on('message', (msg) => {
 });
 
 process.on('SIGINT', shutdown);
+process.on('SIGUSR2', shutdown); // nodemon
