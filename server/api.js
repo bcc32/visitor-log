@@ -9,6 +9,7 @@ import { NoAvailableWordsError } from './url-shortener';
 export default class API {
   constructor({ log, db, msg, urlShortener }) {
     const router = express.Router();
+    this.router = router;
 
     router.use(bodyParser.urlencoded({ extended: false }));
     router.use(bodyParser.json());
@@ -30,8 +31,8 @@ export default class API {
       res.status(200).send(`${callback}(${JSON.stringify(data)})`);
     });
 
-    const messageBus = new EventEmitter();
-    messageBus.setMaxListeners(100);
+    this.messageBus = new EventEmitter();
+    this.messageBus.setMaxListeners(100);
 
     router.get('/messages', async (req, res) => {
       const limit = req.query.limit;
@@ -77,7 +78,7 @@ export default class API {
         const id = await msg.save(data);
         data.id = id;
         res.status(201).json(data);
-        messageBus.emit('update');
+        this.messageBus.emit('update');
       } catch (e) {
         log.error(e);
         res.sendStatus(500);
@@ -85,7 +86,7 @@ export default class API {
     });
 
     router.get('/messages/update', (req, res) => {
-      messageBus.once('update', () => res.sendStatus(204));
+      this.messageBus.once('update', () => res.sendStatus(204));
     });
 
     router.get('/messages/:id', async (req, res) => {
@@ -135,7 +136,10 @@ export default class API {
         }
       }
     });
+  }
 
-    return router;
+  close() {
+    // kick off all waiting clients
+    this.messageBus.emit('update');
   }
 }

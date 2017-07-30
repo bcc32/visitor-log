@@ -1,3 +1,4 @@
+import Promise        from 'bluebird';
 import compression    from 'compression';
 import express        from 'express';
 import expressWinston from 'express-winston';
@@ -93,12 +94,15 @@ app.get('/u/:word', async (req, res) => {
   }
 });
 
-app.use('/api', api);
+app.use('/api', api.router);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
-http.createServer(app).listen(program.port);
+const servers = [];
+
+const httpServer = http.createServer(app).listen(program.port);
 log.info('HTTP server started, listening on port %d', program.port);
+servers.push(httpServer);
 
 let httpsAvailable = true;
 
@@ -106,8 +110,9 @@ try {
   const key = fs.readFileSync(program.keypath);
   const cert = fs.readFileSync(program.certpath);
   const credentials = { key, cert };
-  https.createServer(credentials, app).listen(program.httpsPort);
+  const httpsServer = https.createServer(credentials, app).listen(program.httpsPort);
   log.info('HTTPS server started, listening on port %d', program.httpsPort);
+  servers.push(httpsServer);
 } catch (e) {
   log.warn('Could not load SSL key/certificate: %s', e);
   log.warn('Accepting HTTP connections only');
@@ -127,3 +132,42 @@ function redirectToHTTPS(req, res, next) {
   }
   next();
 }
+
+let shuttingDown = false;
+
+async function shutdown() {
+  if (shuttingDown) return;
+  shuttingDown = true;
+
+  log.info('shutting down');
+
+  const serversClosed = Promise.map(servers, (s) => {
+    return Promise.fromCallback((cb) => {
+      s.close(cb);
+    });
+  });
+
+  try {
+    servers.forEach((s) => s.close());
+
+    api.close();
+    urlShortener.close();
+    db.close();
+
+    await serversClosed;
+
+    log.info('good night');
+    process.exit(0);
+  } catch (e) {
+    log.error(e);
+    process.exit(1);
+  }
+}
+
+process.on('message', (msg) => {
+  if (msg === 'shutdown') {
+    shutdown();
+  }
+});
+
+process.on('SIGINT', shutdown);

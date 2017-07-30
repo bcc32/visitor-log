@@ -81,6 +81,11 @@ export default class DB {
     }
   }
 
+  close() {
+    this.connections.forEach((conn) => conn.destroy());
+    this.connections = [];
+  }
+
   async recordVisitor(ip) {
     const conn = this.connect();
 

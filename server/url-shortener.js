@@ -22,9 +22,13 @@ export default class UrlShortener {
     this.db  = db;
 
     // Every hour, clean up expired URLs
-    setInterval(() => {
+    this.daemon = setInterval(() => {
       this.cleanupExpired();
     }, 3600 * 1000);
+  }
+
+  close() {
+    clearInterval(this.daemon);
   }
 
   async cleanupExpired() {

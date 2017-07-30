@@ -18,8 +18,9 @@
     "prewatch": "run-s build",
     "watch": "run-p watch:client watch:styles",
     "lint": "eslint --fix .",
-    "dev": "forever start config/development.json",
-    "start": "forever start config/production.json",
+    "dev:server": "nodemon",
+    "dev": "run-p watch dev:server",
+    "start": "pm2 start ecosystem.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aaron L. Zeng <a2z@mit.edu> (https://github.com/bcc32/)",
