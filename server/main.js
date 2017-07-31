@@ -166,6 +166,8 @@ async function shutdown() {
     urlShortener.close();
     db.close();
 
+    // FIXME this doesn't actually complete. find out why.
+
     await serversClosed;
 
     log.info('good night');
