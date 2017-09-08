@@ -30,10 +30,20 @@ function parsePortNumberExn(input) {
 
 import { version } from '../package.json';
 
+function defaultPort(env, prod, dev) {
+  if (process.env[env] != null) {
+    return parsePortNumberExn(process.env[env]);
+  }
+  if (isProduction) {
+    return prod;
+  }
+  return dev;
+}
+
 program
   .version(version)
-  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, isProduction ?  80 : 8080)
-  .option('-s --https-port <n>' , 'specify HTTPS port number (default: 443/8443)'       , parsePortNumberExn, isProduction ? 443 : 8443)
+  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, defaultPort('HTTP_PORT', 80, 8080))
+  .option('-s --https-port <n>' , 'specify HTTPS port number (default: 443/8443)'       , parsePortNumberExn, defaultPort('HTTPS_PORT', 443, 8443))
   .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
   .option('-l --log-dir <dir>'  , 'specify log directory (default: ./logs)'             , './logs')
   .option('-k --keypath <path>' , 'specify SSL private key file (default: ./server.key)', './server.key')
