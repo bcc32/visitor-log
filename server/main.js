@@ -7,7 +7,6 @@ import helmet         from 'helmet';
 import http           from 'http';
 import program        from 'commander';
 import socket         from 'socket.io';
-import url            from 'url';
 
 import API from './api';
 import DB  from './db';
