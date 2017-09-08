@@ -1,0 +1,55 @@
+==================================================================
+https://keybase.io/a2z
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://bcc32.com
+  * I am a2z (https://keybase.io/a2z) on keybase.
+  * I have a public key ASA4OFR9t5JwEofDtkO4QsNCEGvpY-iF2JVUPuQaetCRwQo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01203838547db792701287c3b643b842c342106be963e885d895543ee41a7ad091c10a",
+      "host": "keybase.io",
+      "kid": "01203838547db792701287c3b643b842c342106be963e885d895543ee41a7ad091c10a",
+      "uid": "20253cd8db8e499449406de9c8af4019",
+      "username": "a2z"
+    },
+    "merkle_root": {
+      "ctime": 1504906560,
+      "hash": "d0367e82b7fcfaa6dd5eb5db40b65eb2981f63d7521e5d1d0aff4cb0254c71f3e7482d79d24c9141764a0aa5d4d52e7e455d9c78c29e129c790ec40c203e1c7a",
+      "hash_meta": "f0c5036011bab2b49b6ce2fcd8cff0ed2a7224978175e131cdd21b2b96842304",
+      "seqno": 1376110
+    },
+    "service": {
+      "hostname": "bcc32.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.29"
+  },
+  "ctime": 1504906600,
+  "expire_in": 504576000,
+  "prev": "faa64fb0466fe62fe9f34cfd6ff759589dc9a1ee5e03d5b3134861a151042457",
+  "seqno": 11,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgODhUfbeScBKHw7ZDuELDQhBr6WPohdiVVD7kGnrQkcEKp3BheWxvYWTFAz17ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwMzgzODU0N2RiNzkyNzAxMjg3YzNiNjQzYjg0MmMzNDIxMDZiZTk2M2U4ODVkODk1NTQzZWU0MWE3YWQwOTFjMTBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwMzgzODU0N2RiNzkyNzAxMjg3YzNiNjQzYjg0MmMzNDIxMDZiZTk2M2U4ODVkODk1NTQzZWU0MWE3YWQwOTFjMTBhIiwidWlkIjoiMjAyNTNjZDhkYjhlNDk5NDQ5NDA2ZGU5YzhhZjQwMTkiLCJ1c2VybmFtZSI6ImEyeiJ9LCJtZXJrbGVfcm9vdCI6eyJjdGltZSI6MTUwNDkwNjU2MCwiaGFzaCI6ImQwMzY3ZTgyYjdmY2ZhYTZkZDVlYjVkYjQwYjY1ZWIyOTgxZjYzZDc1MjFlNWQxZDBhZmY0Y2IwMjU0YzcxZjNlNzQ4MmQ3OWQyNGM5MTQxNzY0YTBhYTVkNGQ1MmU3ZTQ1NWQ5Yzc4YzI5ZTEyOWM3OTBlYzQwYzIwM2UxYzdhIiwiaGFzaF9tZXRhIjoiZjBjNTAzNjAxMWJhYjJiNDliNmNlMmZjZDhjZmYwZWQyYTcyMjQ5NzgxNzVlMTMxY2RkMjFiMmI5Njg0MjMwNCIsInNlcW5vIjoxMzc2MTEwfSwic2VydmljZSI6eyJob3N0bmFtZSI6ImJjYzMyLmNvbSIsInByb3RvY29sIjoiaHR0cHM6In0sInR5cGUiOiJ3ZWJfc2VydmljZV9iaW5kaW5nIiwidmVyc2lvbiI6MX0sImNsaWVudCI6eyJuYW1lIjoia2V5YmFzZS5pbyBnbyBjbGllbnQiLCJ2ZXJzaW9uIjoiMS4wLjI5In0sImN0aW1lIjoxNTA0OTA2NjAwLCJleHBpcmVfaW4iOjUwNDU3NjAwMCwicHJldiI6ImZhYTY0ZmIwNDY2ZmU2MmZlOWYzNGNmZDZmZjc1OTU4OWRjOWExZWU1ZTAzZDViMzEzNDg2MWExNTEwNDI0NTciLCJzZXFubyI6MTEsInRhZyI6InNpZ25hdHVyZSJ9o3NpZ8RAWSDtzAW31JC/GPsauYApR0RrXD9DyBN8Qu+GqjtwBMuTv2pYChERXQ/z3op1GALp7PK/lm8nxjSYtfcNmabFAahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIFpzevQ1XguPRjYNCBWnNnkXCo9MDoQj9Cxz6pVwojuOo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/a2z
+
+==================================================================
