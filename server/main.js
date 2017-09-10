@@ -55,13 +55,6 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 
-const staticOpts = {
-  index: false,
-  maxAge: '90d',
-};
-app.use(express.static('./dist', staticOpts));
-app.use(express.static('./public', staticOpts));
-
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
 
