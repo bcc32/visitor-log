@@ -26,19 +26,16 @@ function parsePortNumberExn(input) {
 
 import { version } from '../package.json';
 
-function defaultPort(env, prod, dev) {
+function defaultPort(env, def) {
   if (process.env[env] != null) {
     return parsePortNumberExn(process.env[env]);
   }
-  if (isProduction) {
-    return prod;
-  }
-  return dev;
+  return def;
 }
 
 program
   .version(version)
-  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, defaultPort('HTTP_PORT', 80, 8080))
+  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, defaultPort('PORT', 8080))
   .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
   .option('-l --log-dir <dir>'  , 'specify log directory (default: ./logs)'             , './logs')
   .parse(process.argv);
