@@ -1,5 +1,4 @@
 import Promise        from 'bluebird';
-import compression    from 'compression';
 import express        from 'express';
 import expressWinston from 'express-winston';
 import fs             from 'fs';
@@ -53,7 +52,6 @@ const api = new API({ log, db, msg, urlShortener });
 
 const app = express();
 app.use(helmet());
-app.use(compression());
 
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
