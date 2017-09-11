@@ -50,7 +50,11 @@ const urlShortener = new UrlShortener(log, db);
 const api = new API({ log, db, msg, urlShortener });
 
 const app = express();
-app.use(helmet());
+app.use(helmet({
+  hsts: {
+    includeSubDomains: false,
+  },
+}));
 
 app.set('view engine', 'pug');
 app.locals.basedir = __dirname;
