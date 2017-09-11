@@ -118,17 +118,13 @@ async function shutdown() {
 
   log.info('shutting down');
 
-  const serversClosed = Promise.map([http, io], (s) => {
-    return Promise.fromCallback((cb) => {
-      s.close(cb);
-    });
+  const serversClosed = Promise.fromCallback((cb) => {
+    httpServer.close(cb);
   });
 
   try {
     urlShortener.close();
     db.close();
-
-    // FIXME this doesn't actually complete. find out why.
 
     await serversClosed;
 
