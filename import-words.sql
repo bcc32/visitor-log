@@ -8,6 +8,5 @@ CREATE TEMPORARY TABLE words_temp (
 .import public/basic.txt words_temp
 INSERT OR IGNORE INTO words (word)
   SELECT word FROM words_temp
-  EXCEPT
-  SELECT short_url FROM urls;
+  WHERE word NOT IN (SELECT short_url FROM urls);
 COMMIT;
