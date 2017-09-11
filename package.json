@@ -29,7 +29,6 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "commander": "^2.11.0",
-    "compression": "^1.7.0",
     "express": "^4.15.3",
     "express-winston": "^2.4.0",
     "helmet": "^3.8.1",
