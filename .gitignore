@@ -42,6 +42,7 @@ data.db-*
 
 # Build output
 dist
+public/*.gz
 /index.js
 
 # SSL Key and Certificate
