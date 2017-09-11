@@ -1,6 +1,6 @@
 {
   "name": "bcc32.com",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "bcc32's personal website",
   "main": "index.js",
   "scripts": {
