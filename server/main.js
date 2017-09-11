@@ -1,7 +1,6 @@
 import Promise        from 'bluebird';
 import express        from 'express';
 import expressWinston from 'express-winston';
-import fs             from 'fs';
 import helmet         from 'helmet';
 import http           from 'http';
 import program        from 'commander';
