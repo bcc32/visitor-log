@@ -44,6 +44,7 @@ data.db-*
 dist
 public/*.gz
 /index.js
+/nginx.conf
 
 # SSL Key and Certificate
 server.key

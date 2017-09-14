@@ -1,0 +1,14 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $cwd = `pwd`;
+chomp $cwd;
+$cwd .= '/';
+
+open my $fh, '<', 'server/nginx.conf';
+while (<$fh>) {
+    s/PROJECT_ROOT/$cwd/;
+    print;
+}
