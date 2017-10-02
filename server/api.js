@@ -30,7 +30,9 @@ export default class API extends EventEmitter {
       const nonce = ~req.query.nonce;
       const callback = req.query.callback;
       const data = { type: 'pong', nonce };
-      res.status(200).send(`${callback}(${JSON.stringify(data)})`);
+      res.status(200)
+        .set('Content-Type', 'application/javascript')
+        .send(`${callback}(${JSON.stringify(data)})`);
     });
 
     router.get('/messages', async (req, res) => {
