@@ -54,6 +54,7 @@ app.use(helmet({
 }));
 
 app.set('view engine', 'pug');
+app.set('trust proxy', true);
 app.locals.basedir = __dirname;
 
 app.use(expressWinston.logger({ winstonInstance: log }));
