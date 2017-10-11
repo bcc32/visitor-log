@@ -13,7 +13,7 @@
     "build:styles": "run-s build:styles:lessc build:styles:gzip",
     "build:server:rollup": "rollup -c rollup.server.config.js",
     "build:server": "run-s build:server:rollup",
-    "build:config:nginx": "./build-nginx-config > nginx.conf",
+    "build:config:nginx": "./script/build-nginx-config > nginx.conf",
     "build:config": "run-p build:config:nginx",
     "build:public:gzip": "gzip -fk public/*",
     "build:public": "run-p build:public:gzip",
