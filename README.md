@@ -4,23 +4,29 @@ My personal website.
 
 Records visitors to the site and allows them to post messages.
 
+## Setup
+
+```sh
+yarn
+# copy server.pem, server.key to global nginx prefix
+# [include] nginx.conf in the global nginx.conf
+```
+
 ## Running the server
 
 ### Development mode
 
 ```sh
-npm install
-npm run build
+yarn
 npm run dev
+# start nginx
 ```
 
 ### Production mode
 
 ```sh
-npm install
+yarn
 NODE_ENV=production npm run build
 npm start
-# copy server.pem, server.key to global nginx prefix
-# [include] nginx.conf in the global nginx.conf
 # start nginx
 ```
