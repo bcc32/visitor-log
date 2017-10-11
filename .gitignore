@@ -53,3 +53,6 @@ server.pem
 # BuckleScript output
 /lib
 .merlin
+
+# WordPress private configuration
+wp-config.php
