@@ -1,9 +1,9 @@
-extends layout.pug
+extends layout
 
 block init
-  - var currentUrl = '/';
+  - const currentUrl = '/';
 
 block content
   h1#about-me About me
-  include includes/about-me.pug
-  include includes/footer.pug
+  include includes/about-me
+  include includes/footer
