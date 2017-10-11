@@ -3,11 +3,10 @@ extends layout.pug
 block init
   - var currentUrl = '/u'
 
-block content
+append scripts
   script(src='/url-shortener.bundle.js')
 
-  include includes/navbar.pug
-
+block content
   h1 URL shortener service
 
   div#app
