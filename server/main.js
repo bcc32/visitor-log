@@ -127,22 +127,28 @@ async function shutdown() {
   try {
     urlShortener.close();
     db.close();
-
     await serversClosed;
-
     log.info('good night');
-    process.exit(0);
   } catch (e) {
     log.error(e);
-    process.exit(1);
+    throw e;
   }
 }
 
-process.on('message', (msg) => {
+process.on('message', async (msg) => {
   if (msg === 'shutdown') {
-    shutdown();
+    try {
+      await shutdown();
+      process.exit(0);
+    } catch (e) {
+      process.exit(1);
+    }
   }
 });
 
 process.on('SIGINT', shutdown);
-process.on('SIGUSR2', shutdown); // nodemon
+// nodemon
+process.once('SIGUSR2', async () => {
+  await shutdown();
+  process.kill(process.pid, 'SIGUSR2');
+});
