@@ -43,7 +43,8 @@ function server(entry, dest) {
 }
 
 export default [
-  client('client/main.js',          'dist/bundle.js' ),
-  client('client/url-shortener.js', 'dist/url-shortener.bundle.js'),
-  server('server/main.js',          'index.js'       )
+  client('client/clicker.js',       'dist/clicker.js'),
+  client('client/message-log.js',   'dist/message-log.js'),
+  client('client/url-shortener.js', 'dist/url-shortener.js'),
+  server('server/main.js',          'index.js')
 ];
