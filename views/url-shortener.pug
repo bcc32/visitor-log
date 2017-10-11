@@ -1,7 +1,12 @@
 extends layout.pug
 
+block init
+  - var currentUrl = '/u'
+
 block content
   script(src='/url-shortener.bundle.js')
+
+  include includes/navbar.pug
 
   h1 URL shortener service
 

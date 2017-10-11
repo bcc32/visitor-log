@@ -1,5 +1,8 @@
 extends layout.pug
 
+block init
+  - var currentUrl = '/'
+
 block content
   // TODO figure out how to get this to work with rollup
   script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
@@ -8,8 +11,6 @@ block content
   h1 Welcome
 
   div#app
-
-  h2: a(href='/u') URL shortener service
 
   h2#about-me About me
   include includes/about-me.pug

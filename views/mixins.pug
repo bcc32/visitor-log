@@ -16,3 +16,13 @@ mixin snippet(lang)
   pre&attributes(attributes)
     code(class='language-'+lang)
       block
+
+mixin navbar
+  nav.navbar.navbar-default
+    div.container-fluid
+      div.navbar-header
+        a.navbar-brand(href='/') bcc32
+      ul.nav.navbar-nav
+        li(class={ active: currentUrl === '/'     }): a(href='/') Home
+        li(class={ active: currentUrl === '/blag' }): a(href='/blag') Blag
+        li(class={ active: currentUrl === '/u'    }): a(href='/u') URL Shortener
