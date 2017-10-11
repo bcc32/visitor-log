@@ -1,18 +1,9 @@
 extends layout.pug
 
 block init
-  - var currentUrl = '/'
-
-append scripts
-  // TODO figure out how to get this to work with rollup
-  script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
-  script(type='text/javascript', src='/message-log.js')
+  - var currentUrl = '/';
 
 block content
-  h1 Welcome
-
-  div#app
-
-  h2#about-me About me
+  h1#about-me About me
   include includes/about-me.pug
   include includes/footer.pug

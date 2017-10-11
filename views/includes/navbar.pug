@@ -1,0 +1,14 @@
+mixin nav-entry(url)
+  li(class={ active: currentUrl === url })
+    a(href=url)
+      block
+
+nav.navbar.navbar-default
+  div.container-fluid
+    div.navbar-header
+      a.navbar-brand(href='/') bcc32
+    ul.nav.navbar-nav
+      +nav-entry('/')            About Me
+      +nav-entry('/blag')        Blag
+      +nav-entry('/message-log') Message Log
+      +nav-entry('/u')           URL Shortener

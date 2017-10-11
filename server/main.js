@@ -75,6 +75,10 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+app.get('/message-log', (req, res) => {
+  res.render('message-log');
+});
+
 app.get('/u', (req, res) => {
   res.render('url-shortener');
 });
