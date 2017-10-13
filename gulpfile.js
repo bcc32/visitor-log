@@ -4,13 +4,7 @@ const less      = require('gulp-less');
 const minifyCSS = require('gulp-csso');
 const replace   = require('gulp-replace');
 
-gulp.task('css', () => {
-  return gulp.src('client/*.less')
-    .pipe(less())
-    .pipe(minifyCSS())
-    .pipe(gzip())
-    .pipe(gulp.dest('dist'));
-});
+gulp.task('config', [ 'nginx-config' ]);
 
 gulp.task('nginx-config', () => {
   return gulp.src('server/nginx.conf')
@@ -18,7 +12,13 @@ gulp.task('nginx-config', () => {
     .pipe(gulp.dest(''));
 });
 
-gulp.task('config', [ 'nginx-config' ]);
+gulp.task('css', () => {
+  return gulp.src('client/*.less')
+    .pipe(less())
+    .pipe(minifyCSS())
+    .pipe(gzip())
+    .pipe(gulp.dest('dist'));
+});
 
 gulp.task('public', () => {
   return gulp.src('public/*')
