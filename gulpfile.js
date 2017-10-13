@@ -11,9 +11,10 @@ gulp.task('config', () => {
 });
 
 gulp.task('css', () => {
-  return gulp.src('client/*.less')
+  return gulp.src('client/less/*.less')
     .pipe(less())
     .pipe(minifyCSS())
+    .pipe(gulp.dest('dist'))
     .pipe(gzip())
     .pipe(gulp.dest('dist'));
 });
