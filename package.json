@@ -5,10 +5,9 @@
   "main": "bin/main.js",
   "scripts": {
     "build": "gulp",
-    "watch:gulp": "gulp watch",
+    "watch": "gulp watch",
     "lint": "eslint --fix .",
-    "dev:server": "nodemon",
-    "dev": "run-p watch dev:server",
+    "dev": "gulp watch & nodemon",
     "start": "pm2 start ecosystem.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -53,7 +52,6 @@
     "less": "^2.7.2",
     "merge-stream": "^1.0.1",
     "moment": "^2.18.1",
-    "npm-run-all": "^4.0.2",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
