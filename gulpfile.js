@@ -18,7 +18,7 @@ const source        = require('vinyl-source-stream');
 const isProd = process.env.NODE_ENV === 'production';
 
 gulp.task('bucklescript', (cb) => {
-  child_process.exec('bsb -make-world', cb);
+  child_process.exec('./node_modules/.bin/bsb -make-world', cb);
 });
 
 gulp.task('client-rollup', [ 'bucklescript' ], () => {
