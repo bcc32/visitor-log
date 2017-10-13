@@ -55,4 +55,5 @@ server.pem
 .merlin
 
 # WordPress private configuration
+/blag
 wp-config.php

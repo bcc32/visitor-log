@@ -12,7 +12,6 @@ import Log from './log';
 import Msg from './msg';
 import SocketAPI from './socket-api';
 import UrlShortener, { UrlNotFoundError } from './url-shortener';
-import { isProduction } from './common';
 
 function parsePortNumberExn(input) {
   const n = parseInt(input, 10);
