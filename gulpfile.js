@@ -1,7 +1,7 @@
 const child_process = require('child_process');
 const glob          = require('glob');
 const gulp          = require('gulp');
-// const babel         = require('gulp-babel');
+const babel         = require('gulp-babel');
 const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
 const gulpif        = require('gulp-if');
@@ -63,7 +63,13 @@ gulp.task('public', () => {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', [ 'client', 'config', 'css', 'public' ]);
+gulp.task('server', () => {
+  return gulp.src('server/*.js')
+    .pipe(babel())
+    .pipe(gulp.dest('bin'));
+});
+
+gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
 
 gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/bs/**/*',    [ 'client' ]);
@@ -71,4 +77,5 @@ gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/*.less',     [ 'css'    ]);
   gulp.watch('server/nginx.conf', [ 'config' ]);
   gulp.watch('public/*',          [ 'public' ]);
+  gulp.watch('server/*.js',       [ 'server' ]);
 });

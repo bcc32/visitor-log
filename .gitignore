@@ -41,9 +41,9 @@ data.db
 data.db-*
 
 # Build output
+/bin
 /build
 /dist
-/index.js
 /nginx.conf
 
 # SSL Key and Certificate

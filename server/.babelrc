@@ -13,6 +13,7 @@
       "polyfill": false,
       "regenerator": true
     }],
-    "transform-async-to-bluebird"
+    "transform-async-to-bluebird",
+    "transform-es2015-modules-commonjs",
   ]
 }
