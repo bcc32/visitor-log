@@ -1,7 +1,7 @@
 {
   "apps": [{
     "name": "server",
-    "script": "index.js",
+    "script": "bin/main.js",
     "env": {
       "NODE_ENV": "production"
     }
