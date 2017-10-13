@@ -41,8 +41,8 @@ data.db
 data.db-*
 
 # Build output
-dist
-public/*.gz
+/build
+/dist
 /index.js
 /nginx.conf
 

@@ -45,6 +45,7 @@
     "winston-daily-rotate-file": "^1.4.6"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-async-to-bluebird": "^1.1.1",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -58,18 +59,18 @@
     "gulp-babel": "^7.0.0",
     "gulp-csso": "^3.0.0",
     "gulp-gzip": "^1.4.0",
+    "gulp-if": "^2.0.2",
     "gulp-less": "^3.3.2",
     "gulp-replace": "^0.6.1",
+    "gulp-uglify": "^3.0.0",
     "less": "^2.7.2",
     "merge-stream": "^1.0.1",
     "moment": "^2.18.1",
     "npm-run-all": "^4.0.2",
     "rollup": "^0.45.2",
-    "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-uglify": "^2.0.1",
     "rollup-stream": "^1.24.1",
     "rollup-watch": "^4.3.1",
     "vinyl-source-stream": "^1.1.0"

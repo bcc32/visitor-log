@@ -1,39 +1,42 @@
 const child_process = require('child_process');
 const glob          = require('glob');
 const gulp          = require('gulp');
+// const babel         = require('gulp-babel');
 const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
+const gulpif        = require('gulp-if');
 const less          = require('gulp-less');
 const replace       = require('gulp-replace');
+const uglify        = require('gulp-uglify');
 const merge         = require('merge-stream');
 const path          = require('path');
 const rollup        = require('rollup-stream');
-const babel         = require('rollup-plugin-babel');
 const commonjs      = require('rollup-plugin-commonjs');
 const resolve       = require('rollup-plugin-node-resolve');
-const uglify        = require('rollup-plugin-uglify');
 const source        = require('vinyl-source-stream');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 gulp.task('bucklescript', (cb) => {
   child_process.exec('bsb -make-world', cb);
 });
 
-gulp.task('client', [ 'bucklescript' ], () => {
+gulp.task('client-rollup', [ 'bucklescript' ], () => {
   const plugins = [
     resolve(),
     commonjs(),
   ];
-  if (process.env.NODE_ENV === 'production') {
-    plugins.push(babel({
-      exclude: 'node_modules/**',
-    }));
-    plugins.push(uglify());
-  }
 
   return merge(glob.sync('client/*.js').map(input => {
     return rollup({ input, plugins, format: 'iife' })
       .pipe(source(path.resolve(input), path.resolve('client')));
   }))
+    .pipe(gulp.dest('build'));
+});
+
+gulp.task('client', [ 'client-rollup' ], () => {
+  return gulp.src('build/*.js')
+    .pipe(gulpif(isProd, uglify()))
     .pipe(gulp.dest('dist'))
     .pipe(gzip())
     .pipe(gulp.dest('dist'));
@@ -48,7 +51,7 @@ gulp.task('config', () => {
 gulp.task('css', () => {
   return gulp.src('client/less/*.less')
     .pipe(less())
-    .pipe(minifyCSS())
+    .pipe(gulpif(isProd, minifyCSS()))
     .pipe(gulp.dest('dist'))
     .pipe(gzip())
     .pipe(gulp.dest('dist'));
@@ -63,9 +66,9 @@ gulp.task('public', () => {
 gulp.task('default', [ 'client', 'config', 'css', 'public' ]);
 
 gulp.task('watch', [ 'default' ], () => {
-  gulp.watch('client/bs/**/*',    [ 'bucklescript' ]);
-  gulp.watch('client/*.js',       [ 'client'       ]);
-  gulp.watch('client/*.less',     [ 'css'          ]);
-  gulp.watch('server/nginx.conf', [ 'config'       ]);
-  gulp.watch('public/*',          [ 'public'       ]);
+  gulp.watch('client/bs/**/*',    [ 'client' ]);
+  gulp.watch('client/*.js',       [ 'client' ]);
+  gulp.watch('client/*.less',     [ 'css'    ]);
+  gulp.watch('server/nginx.conf', [ 'config' ]);
+  gulp.watch('public/*',          [ 'public' ]);
 });
