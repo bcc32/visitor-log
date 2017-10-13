@@ -22,13 +22,15 @@ gulp.task('bucklescript', (cb) => {
 });
 
 gulp.task('client-rollup', [ 'bucklescript' ], () => {
-  const plugins = [
-    resolve(),
-    commonjs(),
-  ];
-
   return merge(glob.sync('client/*.js').map(input => {
-    return rollup({ input, plugins, format: 'iife' })
+    return rollup({
+      input,
+      format: 'iife',
+      plugins: [
+        resolve(),
+        commonjs(),
+      ],
+    })
       .pipe(source(path.resolve(input), path.resolve('client')));
   }))
     .pipe(gulp.dest('build'));
