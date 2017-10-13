@@ -5,8 +5,7 @@ block init
   - const pageTitle = 'Message log';
 
 append scripts
-  // TODO figure out how to get this to work with rollup
-  script(type='text/javascript', src='/socket.io/socket.io.js')
+  +socket-io
   script(type='text/javascript', src='/message-log.js')
 
 block content

@@ -17,6 +17,15 @@ mixin snippet(lang)
     code(class='language-'+lang)
       block
 
+//- CDN Resources
+
+mixin bootstrap-js
+  script(
+    src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
+    integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa'
+    crossorigin='anonymous'
+  )
+
 mixin jquery
   script(
     src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'
@@ -24,9 +33,9 @@ mixin jquery
     crossorigin='anonymous'
   )
 
-mixin bootstrap-js
+mixin socket-io
   script(
-    src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'
-    integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa'
+    src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js'
+    integrity='sha384-XLd1zkBrnVDJmHkPYQ+3kMmISK/EWOqKjl81APToD6OSKnLm35INC6aPwRNatcDr'
     crossorigin='anonymous'
   )
