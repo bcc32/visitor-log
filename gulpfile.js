@@ -22,6 +22,7 @@ gulp.task('config', [ 'nginx-config' ]);
 
 gulp.task('default', [ 'config', 'css' ]);
 
-gulp.task('watch', () => {
+gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/*.less', [ 'css' ]);
+  gulp.watch('server/nginx.conf', [ 'nginx-config' ]);
 });
