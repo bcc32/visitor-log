@@ -2,7 +2,7 @@
   "name": "visitor-log",
   "version": "0.5.2",
   "sources": [
-    "client"
+    "client/bs"
   ],
   "bs-dependencies" : [
     "bucklescript-tea"
