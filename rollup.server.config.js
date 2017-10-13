@@ -1,5 +1,5 @@
-import babel  from 'rollup-plugin-babel';
-import json   from 'rollup-plugin-json';
+import babel from 'rollup-plugin-babel';
+import json  from 'rollup-plugin-json';
 
 const serverPlugins = [
   json(),
