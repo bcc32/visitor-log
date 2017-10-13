@@ -3,12 +3,17 @@ mixin nav-entry(url)
     a(href=url)
       block
 
-nav.navbar.navbar-default
+nav.navbar.navbar-default.navbar-fixed-bottom
   div.container-fluid
     div.navbar-header
+      button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar')
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
       a.navbar-brand(href='/') bcc32
-    ul.nav.navbar-nav
-      +nav-entry('/')            About Me
-      +nav-entry('/blag')        Blag
-      +nav-entry('/message-log') Message Log
-      +nav-entry('/u')           URL Shortener
+    div#navbar.collapse.navbar-collapse
+      ul.nav.navbar-nav
+        +nav-entry('/')            About Me
+        +nav-entry('/blag')        Blag
+        +nav-entry('/message-log') Message Log
+        +nav-entry('/u')           URL Shortener
