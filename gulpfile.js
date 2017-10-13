@@ -8,6 +8,7 @@ const gulpif        = require('gulp-if');
 const less          = require('gulp-less');
 const replace       = require('gulp-replace');
 const uglify        = require('gulp-uglify');
+const lazypipe      = require('lazypipe');
 const merge         = require('merge-stream');
 const path          = require('path');
 const rollup        = require('rollup-stream');
@@ -36,9 +37,13 @@ gulp.task('client-rollup', [ 'bucklescript' ], () => {
     .pipe(gulp.dest('build'));
 });
 
+const minifyJS = lazypipe()
+      .pipe(babel)
+      .pipe(uglify);
+
 gulp.task('client', [ 'client-rollup' ], () => {
   return gulp.src('build/*.js')
-    .pipe(gulpif(isProd, uglify()))
+    .pipe(gulpif(isProd, minifyJS()))
     .pipe(gulp.dest('dist'))
     .pipe(gzip())
     .pipe(gulp.dest('dist'));

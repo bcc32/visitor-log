@@ -42,7 +42,7 @@ data.db-*
 
 # Build output
 /bin
-/build
+/build/*.js
 /dist
 /nginx.conf
 
