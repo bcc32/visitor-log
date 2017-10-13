@@ -1,6 +1,3 @@
-import $ from 'jquery';
-import 'bootstrap';
-
 $('a.link').click(function () {
   const $elt = $(this);
   const data = {

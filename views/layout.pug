@@ -1,3 +1,5 @@
+include mixins
+
 block init
 
 doctype html
@@ -9,9 +11,10 @@ html(lang='en')
     link(rel='stylesheet', href='/style.css')
     title= 'bcc32 - ' + pageTitle
     block scripts
+      +jquery
+      +bootstrap-js
       script(src='/clicker.js')
 
   body.container-fluid
-    include mixins
     include includes/navbar
     block content
