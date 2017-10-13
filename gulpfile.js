@@ -29,7 +29,7 @@ gulp.task('public', () => {
 gulp.task('default', [ 'config', 'css', 'public' ]);
 
 gulp.task('watch', [ 'default' ], () => {
-  gulp.watch('client/*.less', [ 'css' ]);
+  gulp.watch('client/*.less',     [ 'css'          ]);
   gulp.watch('server/nginx.conf', [ 'nginx-config' ]);
-  gulp.watch('public/*', [ 'public' ]);
+  gulp.watch('public/*',          [ 'public'       ]);
 });
