@@ -1,19 +1,24 @@
-const glob      = require('glob');
-const gulp      = require('gulp');
-const minifyCSS = require('gulp-csso');
-const gzip      = require('gulp-gzip');
-const less      = require('gulp-less');
-const replace   = require('gulp-replace');
-const merge     = require('merge-stream');
-const path      = require('path');
-const rollup    = require('rollup-stream');
-const babel     = require('rollup-plugin-babel');
-const commonjs  = require('rollup-plugin-commonjs');
-const resolve   = require('rollup-plugin-node-resolve');
-const uglify    = require('rollup-plugin-uglify');
-const source    = require('vinyl-source-stream');
+const child_process = require('child_process');
+const glob          = require('glob');
+const gulp          = require('gulp');
+const minifyCSS     = require('gulp-csso');
+const gzip          = require('gulp-gzip');
+const less          = require('gulp-less');
+const replace       = require('gulp-replace');
+const merge         = require('merge-stream');
+const path          = require('path');
+const rollup        = require('rollup-stream');
+const babel         = require('rollup-plugin-babel');
+const commonjs      = require('rollup-plugin-commonjs');
+const resolve       = require('rollup-plugin-node-resolve');
+const uglify        = require('rollup-plugin-uglify');
+const source        = require('vinyl-source-stream');
 
-gulp.task('client', () => {
+gulp.task('bucklescript', (cb) => {
+  child_process.exec('bsb -make-world', cb);
+});
+
+gulp.task('client', [ 'bucklescript' ], () => {
   const plugins = [
     resolve(),
     commonjs(),
@@ -29,6 +34,8 @@ gulp.task('client', () => {
     return rollup({ input, plugins, format: 'iife' })
       .pipe(source(path.resolve(input), path.resolve('client')));
   }))
+    .pipe(gulp.dest('dist'))
+    .pipe(gzip())
     .pipe(gulp.dest('dist'));
 });
 
@@ -56,8 +63,9 @@ gulp.task('public', () => {
 gulp.task('default', [ 'client', 'config', 'css', 'public' ]);
 
 gulp.task('watch', [ 'default' ], () => {
-  gulp.watch('client/*.js',       [ 'client' ]);
-  gulp.watch('client/*.less',     [ 'css'    ]);
-  gulp.watch('server/nginx.conf', [ 'config' ]);
-  gulp.watch('public/*',          [ 'public' ]);
+  gulp.watch('client/bs/**/*',    [ 'bucklescript' ]);
+  gulp.watch('client/*.js',       [ 'client'       ]);
+  gulp.watch('client/*.less',     [ 'css'          ]);
+  gulp.watch('server/nginx.conf', [ 'config'       ]);
+  gulp.watch('public/*',          [ 'public'       ]);
 });
