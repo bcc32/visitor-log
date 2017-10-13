@@ -20,9 +20,16 @@ gulp.task('nginx-config', () => {
 
 gulp.task('config', [ 'nginx-config' ]);
 
-gulp.task('default', [ 'config', 'css' ]);
+gulp.task('public', () => {
+  return gulp.src('public/*')
+    .pipe(gzip())
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('default', [ 'config', 'css', 'public' ]);
 
 gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/*.less', [ 'css' ]);
   gulp.watch('server/nginx.conf', [ 'nginx-config' ]);
+  gulp.watch('public/*', [ 'public' ]);
 });
