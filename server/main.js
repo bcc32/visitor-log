@@ -34,9 +34,9 @@ function defaultPort(env, def) {
 
 program
   .version(version)
-  .option('-p --port <n>'       , 'specify port number (default: 80/8080)'              , parsePortNumberExn, defaultPort('PORT', 8080))
-  .option('-d --dbpath <path>'  , 'specify database file (default: ./data.db)'          , 'data.db')
-  .option('-l --log-dir <dir>'  , 'specify log directory (default: ./logs)'             , './logs')
+  .option('-p --port <n>'     , 'specify port number (default: 8080)'       , parsePortNumberExn, defaultPort('PORT', 8080))
+  .option('-d --dbpath <path>', 'specify database file (default: ./data.db)', 'data.db')
+  .option('-l --log-dir <dir>', 'specify log directory (default: ./logs)'   , './logs')
   .parse(process.argv);
 
 const log = new Log(program.logDir);
