@@ -6,7 +6,9 @@ const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
 const gulpif        = require('gulp-if');
 const less          = require('gulp-less');
+const rename        = require('gulp-rename');
 const replace       = require('gulp-replace');
+const tar           = require('gulp-tar');
 const uglify        = require('gulp-uglify');
 const lazypipe      = require('lazypipe');
 const merge         = require('merge-stream');
@@ -74,6 +76,16 @@ gulp.task('server', () => {
 });
 
 gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
+
+gulp.task('dist', [ 'default' ], () => {
+  return gulp.src([ '**/*', '!node_modules/**/*', '!data.db', '!lib/**/*', '!logs/**/*' ])
+    .pipe(rename((path) => {
+      path.dirname = 'bcc32.com/' + path.dirname;
+    }))
+    .pipe(tar('dist.tar'))
+    .pipe(gzip())
+    .pipe(gulp.dest('.'));
+});
 
 gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/bs/**/*',    [ 'client' ]);

@@ -43,6 +43,7 @@ data.db-*
 # Build output
 /bin
 /dist
+/dist.tar.gz
 /nginx.conf
 
 # SSL Key and Certificate
