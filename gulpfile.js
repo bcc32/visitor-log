@@ -78,7 +78,15 @@ gulp.task('server', () => {
 gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
 
 gulp.task('dist', [ 'default' ], () => {
-  return gulp.src([ '**/*', '!node_modules/**/*', '!data.db', '!lib/**/*', '!logs/**/*' ])
+  // FIXME this is a hack
+  return gulp.src([
+    '**/*',
+    '!node_modules/**/*',
+    '!data.db',
+    '!lib/**/*',
+    '!logs/**/*',
+    '!dist.tar.gz',
+  ])
     .pipe(rename((path) => {
       path.dirname = 'bcc32.com/' + path.dirname;
     }))
