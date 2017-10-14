@@ -14,6 +14,7 @@ const path          = require('path');
 const rollup        = require('rollup-stream');
 const commonjs      = require('rollup-plugin-commonjs');
 const resolve       = require('rollup-plugin-node-resolve');
+const buffer        = require('vinyl-buffer');
 const source        = require('vinyl-source-stream');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -22,7 +23,12 @@ gulp.task('bucklescript', (cb) => {
   child_process.exec('./node_modules/.bin/bsb -make-world', cb);
 });
 
-gulp.task('client-rollup', [ 'bucklescript' ], () => {
+const minifyJS = lazypipe()
+      .pipe(buffer)
+      .pipe(babel)
+      .pipe(uglify);
+
+gulp.task('client', [ 'bucklescript' ], () => {
   return merge(glob.sync('client/*.js').map(input => {
     return rollup({
       input,
@@ -34,15 +40,6 @@ gulp.task('client-rollup', [ 'bucklescript' ], () => {
     })
       .pipe(source(path.resolve(input), path.resolve('client')));
   }))
-    .pipe(gulp.dest('build'));
-});
-
-const minifyJS = lazypipe()
-      .pipe(babel)
-      .pipe(uglify);
-
-gulp.task('client', [ 'client-rollup' ], () => {
-  return gulp.src('build/*.js')
     .pipe(gulpif(isProd, minifyJS()))
     .pipe(gulp.dest('dist'))
     .pipe(gzip())
