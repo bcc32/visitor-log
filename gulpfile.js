@@ -95,7 +95,7 @@ gulp.task('server', (cb) => {
     changed('bin'),
     babel(),
     gulp.dest('bin'),
-  ]);
+  ], cb);
 });
 
 gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
