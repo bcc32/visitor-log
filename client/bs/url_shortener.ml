@@ -125,6 +125,12 @@ let subscriptions _ = Tea.Sub.none
 
 external current_href : string = "location.href" [@@bs.val]
 
+let current_href =
+  if current_href.[String.length current_href - 1] = '/'
+  then (String.sub current_href 0 (String.length current_href - 1))
+  else current_href
+;;
+
 let view_short_url (word : Word_status.t) =
   let open Tea.Html in
   let (href, text) =
