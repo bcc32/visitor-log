@@ -2,6 +2,7 @@ const child_process = require('child_process');
 const glob          = require('glob');
 const gulp          = require('gulp');
 const babel         = require('gulp-babel');
+const changed       = require('gulp-changed');
 const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
 const gulpif        = require('gulp-if');
@@ -50,6 +51,7 @@ gulp.task('client', [ 'bucklescript' ], (cb) => {
   }));
   pump([
     clientFiles,
+    changed('dist'),
     gulpif(isProd, minifyJS()),
     gulp.dest('dist'),
     gzip(),
@@ -60,14 +62,16 @@ gulp.task('client', [ 'bucklescript' ], (cb) => {
 gulp.task('config', (cb) => {
   pump([
     gulp.src('server/nginx.conf'),
+    changed('.'),
     replace('PROJECT_ROOT', __dirname + '/'),
-    gulp.dest(''),
+    gulp.dest('.'),
   ], cb);
 });
 
 gulp.task('css', (cb) => {
   pump([
     gulp.src('client/less/*.less'),
+    changed('dist', { extension: '.css' }),
     less(),
     gulpif(isProd, minifyCSS()),
     gulp.dest('dist'),
@@ -79,6 +83,7 @@ gulp.task('css', (cb) => {
 gulp.task('public', (cb) => {
   pump([
     gulp.src('public/*'),
+    changed('dist', { transformPath: p => p + '.gz' }),
     gzip(),
     gulp.dest('dist'),
   ], cb);
@@ -87,6 +92,7 @@ gulp.task('public', (cb) => {
 gulp.task('server', (cb) => {
   pump([
     gulp.src('server/*.js'),
+    changed('bin'),
     babel(),
     gulp.dest('bin'),
   ]);
