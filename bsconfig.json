@@ -1,6 +1,6 @@
 {
   "name": "visitor-log",
-  "version": "0.5.2",
+  "version": "0.6.1",
   "sources": [
     "client/bs"
   ],
