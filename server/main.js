@@ -25,16 +25,8 @@ function parsePortNumberExn(input) {
 
 import { version } from '../package.json';
 
-function defaultPort(env, def) {
-  if (process.env[env] != null) {
-    return parsePortNumberExn(process.env[env]);
-  }
-  return def;
-}
-
 program
   .version(version)
-  .option('-p --port <n>'     , 'specify port number (default: 8080)'       , parsePortNumberExn, defaultPort('PORT', 8080))
   .option('-d --dbpath <path>', 'specify database file (default: ./data.db)', 'data.db')
   .option('-l --log-dir <dir>', 'specify log directory (default: ./logs)'   , './logs')
   .parse(process.argv);
@@ -102,9 +94,15 @@ app.use('/api', api.router);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
+if (process.env.PORT == null) {
+  log.error('no PORT specified in environment');
+  process.exit(2);
+}
+const port = parseInt(process.env.PORT, 10);
+
 const httpServer = http.createServer(app);
-httpServer.listen(program.port, () => {
-  log.info('HTTP server started on port %d', program.port);
+httpServer.listen(port, () => {
+  log.info('HTTP server started on port %d', port);
 });
 
 const io = socket(httpServer);
