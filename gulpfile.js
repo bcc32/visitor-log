@@ -7,9 +7,7 @@ const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
 const gulpif        = require('gulp-if');
 const less          = require('gulp-less');
-const rename        = require('gulp-rename');
 const replace       = require('gulp-replace');
-const tar           = require('gulp-tar');
 const uglify        = require('gulp-uglify');
 const lazypipe      = require('lazypipe');
 const merge         = require('merge-stream');
@@ -102,24 +100,19 @@ gulp.task('server', (cb) => {
 gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
 
 gulp.task('dist', [ 'default' ], (cb) => {
-  pump([
-    // FIXME this is a hack
-    gulp.src([
-      '**/*',
-      '!node_modules/**/*',
-      '!data.db',
-      '!dist.tar.gz',
-      '!lib/**/*',
-      '!logs/**/*',
-      '!nginx.conf',
-    ]),
-    rename((path) => {
-      path.dirname = 'bcc32.com/' + path.dirname;
-    }),
-    tar('dist.tar'),
-    gzip(),
-    gulp.dest('.'),
-  ], cb);
+  const version = require('./package.json').version;
+  const filename = 'bcc32.com-v' + version + '.tar.gz';
+  child_process.exec('git ls-files -z', function (err, stdout) {
+    if (err != null) { return cb(err); }
+    const files = stdout.split('\0').filter(x => x !== '');
+    files.push('bin');
+    files.push('dist');
+    const args = ['-czf', filename].concat(files);
+    child_process.execFile('tar', args, function (err, stdout) {
+      if (err != null) { return cb(err); }
+      cb(null);
+    });
+  });
 });
 
 gulp.task('watch', [ 'default' ], () => {
