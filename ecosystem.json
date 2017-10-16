@@ -4,11 +4,13 @@
     "script": "bin/main.js",
     "env": {
       "DBPATH": "./data.db",
+      "LOGPATH": "./logs",
       "NODE_ENV": "production",
       "PORT": 8080
     },
     "env_development": {
       "DBPATH": "./data.db",
+      "LOGPATH": "./logs",
       "NODE_ENV": "development",
       "PORT": 8080
     }

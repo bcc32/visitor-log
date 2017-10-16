@@ -3,7 +3,6 @@ import express        from 'express';
 import expressWinston from 'express-winston';
 import helmet         from 'helmet';
 import http           from 'http';
-import program        from 'commander';
 import socket         from 'socket.io';
 
 import API from './api';
@@ -32,12 +31,7 @@ function requiredEnv(name, f) {
 
 import { version } from '../package.json';
 
-program
-  .version(version)
-  .option('-l --log-dir <dir>', 'specify log directory (default: ./logs)'   , './logs')
-  .parse(process.argv);
-
-const log = new Log(program.logDir);
+const log = new Log(requiredEnv('LOGPATH'));
 const db  = new DB(log, requiredEnv('DBPATH'));
 const msg = new Msg(db);
 const urlShortener = new UrlShortener(log, db);
