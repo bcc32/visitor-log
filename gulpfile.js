@@ -1,4 +1,6 @@
+const Promise       = require('bluebird');
 const child_process = require('child_process');
+const fs            = require('fs');
 const glob          = require('glob');
 const gulp          = require('gulp');
 const babel         = require('gulp-babel');
@@ -18,6 +20,9 @@ const commonjs      = require('rollup-plugin-commonjs');
 const resolve       = require('rollup-plugin-node-resolve');
 const buffer        = require('vinyl-buffer');
 const source        = require('vinyl-source-stream');
+
+Promise.promisifyAll(child_process);
+Promise.promisifyAll(fs);
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -102,21 +107,21 @@ gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
 gulp.task('dist', [ 'default' ], (cb) => {
   const version = require('./package.json').version;
   const filename = 'bcc32.com-v' + version + '.tar.gz';
-  child_process.exec('git ls-files -z', function (err, stdout) {
-    if (err != null) { return cb(err); }
-    const files = stdout.split('\0').filter(x => x !== '');
-    files.push('bin');
-    files.push('dist');
-    const basename = path.basename(__dirname);
-    const args = ['-czf', path.join(basename, filename)]
-      .concat(files.map(x => path.join(basename, x)));
-    child_process.execFile('tar', args, {
-      cwd: __dirname + '/..',
-    }, function (err, stdout) {
-      if (err != null) { return cb(err); }
-      cb(null);
-    });
-  });
+  const basename = path.basename(__dirname) + '-v' + version;
+  fs.symlinkAsync('.', basename)
+    .then(() => child_process.execAsync('git ls-files -z'))
+    .then(stdout => {
+      const files = stdout.split('\0').filter(x => x !== '');
+      files.push('bin');
+      files.push('dist');
+      return files;
+    })
+    .then(files => {
+      return ['-czf', filename].concat(files.map(x => path.join(basename, x)));
+    })
+    .then(args => child_process.execFileAsync('tar', args))
+    .finally(() => fs.unlinkAsync(basename))
+    .asCallback(cb);
 });
 
 gulp.task('watch', [ 'default' ], () => {
