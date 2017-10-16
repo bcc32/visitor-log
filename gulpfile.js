@@ -107,9 +107,10 @@ gulp.task('dist', [ 'default' ], (cb) => {
       '**/*',
       '!node_modules/**/*',
       '!data.db',
+      '!dist.tar.gz',
       '!lib/**/*',
       '!logs/**/*',
-      '!dist.tar.gz',
+      '!nginx.conf',
     ]),
     rename((path) => {
       path.dirname = 'bcc32.com/' + path.dirname;
