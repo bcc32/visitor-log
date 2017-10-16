@@ -12,24 +12,12 @@ import Msg from './msg';
 import SocketAPI from './socket-api';
 import UrlShortener, { UrlNotFoundError } from './url-shortener';
 
-function parsePortNumberExn(input) {
-  const n = parseInt(input, 10);
-  if (!Number.isInteger(n)) {
-    throw new Error(`must be an integer: ${input}`);
-  } else if (!(0 <= n && n <= 65535)) {
-    throw new Error(`port number out of range: ${n}`);
-  }
-  return n;
-}
-
-function requiredEnv(name, f) {
+function requiredEnv(name) {
   if (process.env[name] == null) {
     throw new Error(`missing required environment variable ${name}`);
   }
   return process.env[name];
 }
-
-import { version } from '../package.json';
 
 const log = new Log(requiredEnv('LOGPATH'));
 const db  = new DB(log, requiredEnv('DBPATH'));
