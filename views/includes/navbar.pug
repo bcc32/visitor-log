@@ -1,7 +1,7 @@
-mixin nav-entry(url)
+mixin nav-entry(url, text)
   li(class={ active: currentUrl === url })
     a(href=url)
-      block
+      = text
 
 nav.navbar.navbar-default.navbar-fixed-top
   div.container-fluid
@@ -13,7 +13,7 @@ nav.navbar.navbar-default.navbar-fixed-top
       a.navbar-brand(href='/') bcc32
     div#navbar.collapse.navbar-collapse
       ul.nav.navbar-nav
-        +nav-entry('/')            About Me
-        +nav-entry('/blag')        Blag
-        +nav-entry('/message-log') Message Log
-        +nav-entry('/u')           URL Shortener
+        +nav-entry('/'           , 'About Me')
+        +nav-entry('/blag'       , 'Blag')
+        +nav-entry('/message-log', 'Message Log')
+        +nav-entry('/u'          , 'URL Shortener')
