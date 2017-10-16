@@ -23,16 +23,22 @@ function parsePortNumberExn(input) {
   return n;
 }
 
+function requiredEnv(name, f) {
+  if (process.env[name] == null) {
+    throw new Error(`missing required environment variable ${name}`);
+  }
+  return process.env[name];
+}
+
 import { version } from '../package.json';
 
 program
   .version(version)
-  .option('-d --dbpath <path>', 'specify database file (default: ./data.db)', 'data.db')
   .option('-l --log-dir <dir>', 'specify log directory (default: ./logs)'   , './logs')
   .parse(process.argv);
 
 const log = new Log(program.logDir);
-const db  = new DB(log, program.dbpath);
+const db  = new DB(log, requiredEnv('DBPATH'));
 const msg = new Msg(db);
 const urlShortener = new UrlShortener(log, db);
 const api = new API({ log, db, msg, urlShortener });
@@ -94,11 +100,7 @@ app.use('/api', api.router);
 
 app.use(expressWinston.errorLogger({ winstonInstance: log }));
 
-if (process.env.PORT == null) {
-  log.error('no PORT specified in environment');
-  process.exit(2);
-}
-const port = parseInt(process.env.PORT, 10);
+const port = parseInt(requiredEnv('PORT'), 10);
 
 const httpServer = http.createServer(app);
 httpServer.listen(port, () => {

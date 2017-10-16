@@ -3,10 +3,12 @@
     "name": "server",
     "script": "bin/main.js",
     "env": {
+      "DBPATH": "./data.db",
       "NODE_ENV": "production",
       "PORT": 8080
     },
     "env_development": {
+      "DBPATH": "./data.db",
       "NODE_ENV": "development",
       "PORT": 8080
     }
