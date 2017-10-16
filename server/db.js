@@ -70,7 +70,8 @@ export default class DB {
     if (typeof connection === 'undefined') {
       connection = new Connection(this.dbpath, this);
     }
-    return connection;
+    return Promise.resolve(connection)
+      .disposer((conn) => conn.close());
   }
 
   release(connection) {
@@ -86,36 +87,33 @@ export default class DB {
     this.connections = [];
   }
 
-  async recordVisitor(ip) {
-    const conn = this.connect();
+  recordVisitor(ip) {
+    return Promise.using(this.connect(), async (conn) => {
+      const insert = conn.prepare(String.raw`
+        INSERT OR IGNORE INTO visitors (ip) VALUES (?)
+      `);
 
-    const insert = conn.prepare(String.raw`
-      INSERT OR IGNORE INTO visitors (ip) VALUES (?)
-    `);
+      const select = conn.prepare(String.raw`
+        SELECT id FROM visitors WHERE ip = ?
+      `);
 
-    const select = conn.prepare(String.raw`
-      SELECT id FROM visitors WHERE ip = ?
-    `);
-
-    try {
-      await insert.runAsync(ip);
-      const { id } = await select.getAsync(ip);
-      return id;
-    } finally {
-      await select.resetAsync();
-      conn.close();
-    }
+      try {
+        await insert.runAsync(ip);
+        const { id } = await select.getAsync(ip);
+        return id;
+      } finally {
+        await select.resetAsync();
+      }
+    });
   }
 
-  async recordLinkClick({ visitor_id, path, label, href }) {
-    const conn = this.connect();
+  recordLinkClick({ visitor_id, path, label, href }) {
+    return Promise.using(this.connect(), async (conn) => {
+      const stmt = conn.prepare(String.raw`
+        INSERT INTO link_clicks (timestamp, visitor_id, path, label, href)
+        VALUES ($timestamp, $visitor_id, $path, $label, $href)
+      `);
 
-    const stmt = conn.prepare(String.raw`
-      INSERT INTO link_clicks (timestamp, visitor_id, path, label, href)
-      VALUES ($timestamp, $visitor_id, $path, $label, $href)
-    `);
-
-    try {
       await stmt.runAsync({
         $visitor_id: visitor_id,
         $path: path,
@@ -123,8 +121,6 @@ export default class DB {
         $href: href,
         $timestamp: new Date().toISOString(),
       });
-    } finally {
-      conn.close();
-    }
+    });
   }
 }

@@ -1,3 +1,5 @@
+import Promise from 'bluebird';
+
 export class NoAvailableWordsError extends Error {
   constructor() {
     super();
@@ -31,146 +33,143 @@ export default class UrlShortener {
     clearInterval(this.daemon);
   }
 
-  async cleanupExpired() {
-    const conn = this.db.connect();
-
-    const begin = conn.prepare(String.raw`
-      BEGIN IMMEDIATE TRANSACTION
-    `);
-
-    const insertWords = conn.prepare(String.raw`
-      INSERT INTO words
-      SELECT short_url FROM urls
-      WHERE expiry < $expiry
-    `);
-
-    const deleteUrls = conn.prepare(String.raw`
-      DELETE FROM urls WHERE expiry < $expiry
-    `);
-
-    const commit = conn.prepare(String.raw`
-      COMMIT TRANSACTION
-    `);
-
-    const rollback = conn.prepare(String.raw`
-      ROLLBACK TRANSACTION
-    `);
-
-    await begin.runAsync();
-
+  cleanupExpired() {
     const $expiry = new Date().toISOString();
 
-    try {
-      await insertWords.runAsync({ $expiry });
-      await deleteUrls.runAsync({ $expiry });
-      await commit.runAsync();
+    return Promise.using(this.db.connect(), async (conn) => {
+      const begin = conn.prepare(String.raw`
+        BEGIN IMMEDIATE TRANSACTION
+      `);
 
-      const changes = deleteUrls.changes;
-      this.log.info('cleaned up %d expired URLs', changes);
-    } catch (e) {
-      this.log.error(e);
-      await rollback.runAsync();
-    } finally {
-      conn.close();
-    }
+      const insertWords = conn.prepare(String.raw`
+        INSERT INTO words
+        SELECT short_url FROM urls
+        WHERE expiry < $expiry
+      `);
+
+      const deleteUrls = conn.prepare(String.raw`
+        DELETE FROM urls WHERE expiry < $expiry
+      `);
+
+      const commit = conn.prepare(String.raw`
+        COMMIT TRANSACTION
+      `);
+
+      const rollback = conn.prepare(String.raw`
+        ROLLBACK TRANSACTION
+      `);
+
+      await begin.runAsync();
+
+      try {
+        await insertWords.runAsync({ $expiry });
+        await deleteUrls.runAsync({ $expiry });
+        await commit.runAsync();
+
+        const changes = deleteUrls.changes;
+        this.log.info('cleaned up %d expired URLs', changes);
+      } catch (e) {
+        this.log.error(e);
+        await rollback.runAsync();
+        throw e;
+      }
+    });
   }
 
-  async shorten(url) {
-    const conn = this.db.connect();
-
-    const begin = conn.prepare(String.raw`
-      BEGIN TRANSACTION
-    `);
-
-    const countWords = conn.prepare(String.raw`
-      SELECT COUNT(*) AS num_words FROM words
-    `);
-
-    const selectWord = conn.prepare(String.raw`
-      SELECT word FROM words
-      LIMIT 1 OFFSET $index
-    `);
-
-    const deleteWord = conn.prepare(String.raw`
-      DELETE FROM words WHERE word = $word
-    `);
-
-    const insertNewUrl = conn.prepare(String.raw`
-      INSERT INTO urls (short_url, url, expiry)
-      VALUES ($short_url, $url, $expiry)
-    `);
-
-    const commit = conn.prepare(String.raw`
-      COMMIT TRANSACTION
-    `);
-
-    const rollback = conn.prepare(String.raw`
-      ROLLBACK TRANSACTION
-    `);
-
+  shorten(url) {
     let expiry = new Date();
     expiry.setHours(expiry.getHours() + 1);
     expiry = expiry.toISOString();
 
-    try {
-      await begin.runAsync();
+    return Promise.using(this.db.connect(), async (conn) => {
+      const begin = conn.prepare(String.raw`
+        BEGIN TRANSACTION
+      `);
 
-      const { num_words } = await countWords.getAsync();
-      if (num_words === 0) {
-        throw new NoAvailableWordsError();
+      const countWords = conn.prepare(String.raw`
+        SELECT COUNT(*) AS num_words FROM words
+      `);
+
+      const selectWord = conn.prepare(String.raw`
+        SELECT word FROM words
+        LIMIT 1 OFFSET $index
+      `);
+
+      const deleteWord = conn.prepare(String.raw`
+        DELETE FROM words WHERE word = $word
+      `);
+
+      const insertNewUrl = conn.prepare(String.raw`
+        INSERT INTO urls (short_url, url, expiry)
+        VALUES ($short_url, $url, $expiry)
+      `);
+
+      const commit = conn.prepare(String.raw`
+        COMMIT TRANSACTION
+      `);
+
+      const rollback = conn.prepare(String.raw`
+        ROLLBACK TRANSACTION
+      `);
+
+      try {
+        await begin.runAsync();
+
+        const { num_words } = await countWords.getAsync();
+        if (num_words === 0) {
+          throw new NoAvailableWordsError();
+        }
+
+        const $index = Math.floor(num_words * Math.random());
+        const { word } = await selectWord.getAsync({ $index });
+
+        await deleteWord.runAsync({ $word: word });
+
+        await insertNewUrl.runAsync({
+          $short_url: word,
+          $url: url,
+          $expiry: expiry,
+        });
+
+        await commit.runAsync();
+
+        return {
+          word,
+          url,
+          expiry,
+        };
+      } catch (e) {
+        this.log.error(e);
+        this.log.warn('rolling back transaction');
+        await rollback.runAsync();
+        throw e;
+      } finally {
+        await countWords.resetAsync();
+        await selectWord.resetAsync();
+        await deleteWord.resetAsync();
       }
-
-      const $index = Math.floor(num_words * Math.random());
-      const { word } = await selectWord.getAsync({ $index });
-
-      await deleteWord.runAsync({ $word: word });
-
-      await insertNewUrl.runAsync({
-        $short_url: word,
-        $url: url,
-        $expiry: expiry,
-      });
-
-      await commit.runAsync();
-
-      return {
-        word,
-        url,
-        expiry,
-      };
-    } catch (e) {
-      this.log.error(e);
-      this.log.warn('rolling back transaction');
-      await rollback.runAsync();
-      throw e;
-    } finally {
-      await countWords.resetAsync();
-      await selectWord.resetAsync();
-      await deleteWord.resetAsync();
-      conn.close();
-    }
+    });
   }
 
-  async lookup(word) {
-    const conn = this.db.connect();
+  lookup(word) {
+    return Promise.using(this.db.connect(), async (conn) => {
+      const stmt = conn.prepare(String.raw`
+        SELECT url FROM urls
+        WHERE short_url = $short_url AND expiry >= $now
+      `);
 
-    const stmt = conn.prepare(String.raw`
-      SELECT url FROM urls
-      WHERE short_url = $short_url AND expiry >= $now
-    `);
-
-    try {
-      const row = await stmt.getAsync({
-        $short_url: word,
-        $now: new Date().toISOString(),
-      });
-      if (row == null) {
-        throw new UrlNotFoundError(word);
+      try {
+        const row = await stmt.getAsync({
+          $short_url: word,
+          $now: new Date().toISOString(),
+        });
+        if (row == null) {
+          throw new UrlNotFoundError(word);
+        }
+        return row.url;
+      } finally {
+        await stmt.resetAsync();
       }
-      return row.url;
-    } finally {
-      await stmt.resetAsync();
-      conn.close();
-    }
+    });
   }
 }
