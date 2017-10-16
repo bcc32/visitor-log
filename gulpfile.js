@@ -107,8 +107,12 @@ gulp.task('dist', [ 'default' ], (cb) => {
     const files = stdout.split('\0').filter(x => x !== '');
     files.push('bin');
     files.push('dist');
-    const args = ['-czf', filename].concat(files);
-    child_process.execFile('tar', args, function (err, stdout) {
+    const basename = path.basename(__dirname);
+    const args = ['-czf', path.join(basename, filename)]
+      .concat(files.map(x => path.join(basename, x)));
+    child_process.execFile('tar', args, {
+      cwd: __dirname + '/..',
+    }, function (err, stdout) {
       if (err != null) { return cb(err); }
       cb(null);
     });
