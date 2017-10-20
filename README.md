@@ -4,15 +4,10 @@ My personal website.
 
 Records visitors to the site and allows them to post messages.
 
-## Setup
-
-```sh
-yarn
-# copy server.pem, server.key to global nginx prefix
-# [include] nginx.conf in the global nginx.conf
-```
-
 ## Running the server
+
+This server is meant to be run behind a reverse proxy like NGINX. If no such
+reverse proxy is being used, the environment variable NO_PROXY should be set.
 
 ### Development mode
 

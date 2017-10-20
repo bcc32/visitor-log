@@ -3,6 +3,7 @@ import express        from 'express';
 import expressWinston from 'express-winston';
 import helmet         from 'helmet';
 import http           from 'http';
+import path           from 'path';
 import socket         from 'socket.io';
 
 import API from './api';
@@ -32,8 +33,10 @@ app.use(helmet({
   },
 }));
 
+const haveProxy = !process.env.NO_PROXY;
+
 app.set('view engine', 'pug');
-app.set('trust proxy', true);
+app.set('trust proxy', haveProxy);
 app.locals.basedir = __dirname;
 
 app.use(expressWinston.logger({ winstonInstance: log }));
@@ -49,6 +52,15 @@ app.use(async (req, res, next) => {
     res.sendStatus(500);
   }
 });
+
+if (!haveProxy) {
+  const opts = {
+    index: false,
+    maxAge: '90d',
+  };
+  app.use(express.static(path.join(__dirname, '..', 'dist'), opts));
+  app.use(express.static(path.join(__dirname, '..', 'public'), opts));
+}
 
 app.get('/', (req, res) => {
   res.render('index');

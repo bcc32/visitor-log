@@ -7,7 +7,7 @@
     "build": "gulp",
     "watch": "gulp watch",
     "lint": "eslint --fix .",
-    "dev": "gulp watch & nodemon",
+    "dev": "gulp watch & pm2 start ecosystem.json --env development",
     "start": "pm2 start ecosystem.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -46,7 +46,6 @@
     "gulp-gzip": "^1.4.0",
     "gulp-if": "^2.0.2",
     "gulp-less": "^3.3.2",
-    "gulp-replace": "^0.6.1",
     "gulp-uglify": "^3.0.0",
     "lazypipe": "^1.0.1",
     "less": "^2.7.2",

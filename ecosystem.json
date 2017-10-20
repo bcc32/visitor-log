@@ -9,9 +9,11 @@
       "PORT": 8080
     },
     "env_development": {
+      "watch": [ "bin" ],
       "DBPATH": "./data.db",
       "LOGPATH": "./logs",
       "NODE_ENV": "development",
+      "NO_PROXY": true,
       "PORT": 8080
     }
   }]

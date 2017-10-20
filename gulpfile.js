@@ -9,7 +9,6 @@ const minifyCSS     = require('gulp-csso');
 const gzip          = require('gulp-gzip');
 const gulpif        = require('gulp-if');
 const less          = require('gulp-less');
-const replace       = require('gulp-replace');
 const uglify        = require('gulp-uglify');
 const lazypipe      = require('lazypipe');
 const merge         = require('merge-stream');
@@ -63,15 +62,6 @@ gulp.task('client', [ 'bucklescript' ], (cb) => {
   ], cb);
 });
 
-gulp.task('config', (cb) => {
-  pump([
-    gulp.src('server/nginx.conf'),
-    changed('.'),
-    replace('PROJECT_ROOT', __dirname + '/'),
-    gulp.dest('.'),
-  ], cb);
-});
-
 gulp.task('css', (cb) => {
   pump([
     gulp.src('client/less/*.less'),
@@ -102,7 +92,7 @@ gulp.task('server', (cb) => {
   ], cb);
 });
 
-gulp.task('default', [ 'client', 'config', 'css', 'public', 'server' ]);
+gulp.task('default', [ 'client', 'css', 'public', 'server' ]);
 
 gulp.task('dist', [ 'default' ], (cb) => {
   const version = require('./package.json').version;
@@ -128,7 +118,6 @@ gulp.task('watch', [ 'default' ], () => {
   gulp.watch('client/bs/**/*',    [ 'client' ]);
   gulp.watch('client/*.js',       [ 'client' ]);
   gulp.watch('client/*.less',     [ 'css'    ]);
-  gulp.watch('server/nginx.conf', [ 'config' ]);
   gulp.watch('public/*',          [ 'public' ]);
   gulp.watch('server/*.js',       [ 'server' ]);
 });
