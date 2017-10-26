@@ -4,16 +4,18 @@ type t =
 
 class type _js_t = object
   method message   : string
-  method timestamp : string
+  method createdAt : string
 end [@bs]
 type js_t = _js_t Js.t
 
 let of_js js =
+  Js.log js;
   { text      = js##message
-  ; timestamp = js##timestamp }
+  ; timestamp = js##createdAt }
 ;;
 
 let of_json json =
+  Js.log json;
   match json |> Js.Json.decodeObject with
   | None -> None
   | Some dict ->
@@ -24,7 +26,7 @@ let of_json json =
     in
     match
       ( get "message"
-      , get "timestamp" )
+      , get "createdAt" )
     with
     | Some text, Some timestamp ->
       Some { text; timestamp }

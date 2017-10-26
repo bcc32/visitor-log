@@ -10,4 +10,4 @@ then
     exit 1
 fi
 
-cat `dirname $0`/import-words.sql | sqlite3 -init schema.sql -csv -noheader $DBFILE
+cat `dirname $0`/import-words.sql | sqlite3 -csv -noheader $DBFILE

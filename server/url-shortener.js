@@ -79,11 +79,7 @@ export default class UrlShortener {
         })
         .then((word) => {
           return this.db.URL
-            .create({
-              url,
-              expiry,
-              shortUrl: word,
-            }, { transaction: t });
+            .create({ url, expiry, word }, { transaction: t });
         });
     });
   }

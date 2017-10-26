@@ -1,5 +1,7 @@
 import { Op } from 'sequelize';
 
+const attributes = ['id', 'message', 'createdAt'];
+
 export default class Msg {
   constructor(db) {
     this.db = db;
@@ -7,7 +9,7 @@ export default class Msg {
 
   get(id) {
     return this.db.Message
-      .findOne({ where: { id }, raw: true });
+      .findOne({ where: { id }, attributes });
   }
 
   getAll({ limit, reverse, since }) {
@@ -20,7 +22,7 @@ export default class Msg {
     const dir = reverse ? 'DESC' : 'ASC';
 
     return this.db.Message
-      .findAll({ where, limit, order: [[ 'createdAt', dir ]], raw: true });
+      .findAll({ where, limit, order: [[ 'createdAt', dir ]], attributes });
   }
 
   save({ message, visitor_id }) {

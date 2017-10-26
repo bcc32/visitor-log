@@ -6,6 +6,7 @@ export default class DB {
 
     this.db = new Sequelize({
       dialect: 'sqlite',
+      logging: this.log.verbose.bind(this.log),
       pool: {
         max: 5,
         min: 0,
@@ -54,7 +55,7 @@ export default class DB {
     });
 
     const URL = this.db.define('url', {
-      shortUrl: { type: Sequelize.TEXT, field: 'short_url', primaryKey: true },
+      word: { type: Sequelize.TEXT, field: 'word', primaryKey: true },
       url: { type: Sequelize.TEXT, allowNull: false },
       expiry: { type: Sequelize.TEXT, allowNull: false },
     }, {
