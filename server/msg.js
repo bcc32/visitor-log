@@ -6,7 +6,8 @@ export default class Msg {
   }
 
   get(id) {
-    return this.db.Message.findOne({ where: { id }, raw: true });
+    return this.db.Message
+      .findOne({ where: { id }, raw: true });
   }
 
   getAll({ limit, reverse, since }) {
