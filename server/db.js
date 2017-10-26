@@ -1,5 +1,4 @@
-import Promise     from 'bluebird';
-import Sequelize   from 'sequelize';
+import Sequelize from 'sequelize';
 
 export default class DB {
   constructor(log, dbpath) {

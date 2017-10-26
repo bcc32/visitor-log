@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import { Op } from 'sequelize';
 
 export default class Msg {

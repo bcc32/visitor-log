@@ -53,7 +53,7 @@ export default class UrlShortener {
         })
         .then((urls) => {
           const numExpired = urls.length;
-          this.log.info('cleaned up %d expired URLs');
+          this.log.info('cleaned up %d expired URLs', numExpired);
         });
     });
   }
