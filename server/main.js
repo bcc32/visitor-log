@@ -119,7 +119,7 @@ async function shutdown() {
 
   try {
     urlShortener.close();
-    db.close();
+    await db.close();
     await serversClosed;
     log.info('good night');
   } catch (e) {

@@ -34,6 +34,7 @@ export default class API extends EventEmitter {
 
     router.get('/messages', async (req, res) => {
       const limit = req.query.limit;
+      const since = req.query.since;
 
       let reverse = true;
       const order = req.query.order;
@@ -49,7 +50,7 @@ export default class API extends EventEmitter {
       }
 
       try {
-        const messages = await msg.getAll({ limit, reverse });
+        const messages = await msg.getAll({ limit, reverse, since });
         res.status(200).json(messages);
       } catch (e) {
         log.error(e);
@@ -102,7 +103,7 @@ export default class API extends EventEmitter {
         res.status(201).end();
       } catch (e) {
         log.error(e);
-        res.sendStatus(500);
+        res.sendStatus(400);
       }
     });
 

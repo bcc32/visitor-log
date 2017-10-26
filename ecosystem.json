@@ -10,7 +10,7 @@
     },
     "env_development": {
       "watch": [ "bin" ],
-      "DBPATH": "./data.db",
+      "DBPATH": "./dev.db",
       "LOGPATH": "./logs",
       "NODE_ENV": "development",
       "NO_PROXY": true,
