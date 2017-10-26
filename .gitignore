@@ -39,6 +39,8 @@ jspm_packages
 # SQLite Database
 data.db
 data.db-*
+dev.db
+dev.db-*
 
 # Build output
 /bin
