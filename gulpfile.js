@@ -53,8 +53,7 @@ gulp.task('client', [ 'bucklescript' ], (cb) => {
   }));
   pump([
     clientFiles,
-    changed('dist'),
-    // FIXME this doesn't account for changing NODE_ENV
+    // TODO see if we can used changed() here
     gulpif(isProd, minifyJS()),
     gulp.dest('dist'),
     gzip(),
