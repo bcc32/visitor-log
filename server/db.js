@@ -29,6 +29,7 @@ export default class DB {
     const Message = this.db.define('message', {
       message: { type: Sequelize.TEXT, allowNull: false },
       hidden: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    }, {
       indexes: [
         { fields: [ 'createdAt' ] },
         { fields: [ 'visitorId' ] },
@@ -39,6 +40,7 @@ export default class DB {
       path: { type: Sequelize.TEXT, allowNull: false },
       label: { type: Sequelize.TEXT, allowNull: false },
       href: { type: Sequelize.TEXT, allowNull: false },
+    }, {
       indexes: [{ fields: [ 'visitorId' ] }],
     });
 
@@ -55,6 +57,7 @@ export default class DB {
       shortUrl: { type: Sequelize.TEXT, field: 'short_url', primaryKey: true },
       url: { type: Sequelize.TEXT, allowNull: false },
       expiry: { type: Sequelize.TEXT, allowNull: false },
+    }, {
       indexes: [{ fields: [ 'expiry' ] }],
     });
 
