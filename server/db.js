@@ -1,5 +1,7 @@
 import Sequelize from 'sequelize';
 
+import schema from './schema';
+
 export default class DB {
   constructor(log, dbpath) {
     this.log = log;
@@ -15,60 +17,12 @@ export default class DB {
       storage: dbpath,
     });
 
-    this.schema();
+    const models = schema(this.db, Sequelize.DataTypes);
+    Object.assign(this, models);
   }
 
   close() {
     return this.db.close();
-  }
-
-  schema() {
-    const Visitor = this.db.define('visitor', {
-      ip: { type: Sequelize.TEXT, allowNull: false, unique: true },
-    });
-
-    const Message = this.db.define('message', {
-      message: { type: Sequelize.TEXT, allowNull: false },
-      hidden: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-    }, {
-      indexes: [
-        { fields: [ 'createdAt' ] },
-        { fields: [ 'visitorId' ] },
-      ],
-    });
-
-    const LinkClick = this.db.define('link_click', {
-      path: { type: Sequelize.TEXT, allowNull: false },
-      label: { type: Sequelize.TEXT, allowNull: false },
-      href: { type: Sequelize.TEXT, allowNull: false },
-    }, {
-      indexes: [{ fields: [ 'visitorId' ] }],
-    });
-
-    Visitor.hasMany(Message);
-    Visitor.hasMany(LinkClick);
-
-    const Word = this.db.define('word', {
-      word: { type: Sequelize.TEXT, primaryKey: true },
-    }, {
-      timestamps: false,
-    });
-
-    const URL = this.db.define('url', {
-      word: { type: Sequelize.TEXT, field: 'word', primaryKey: true },
-      url: { type: Sequelize.TEXT, allowNull: false },
-      expiry: { type: Sequelize.TEXT, allowNull: false },
-    }, {
-      indexes: [{ fields: [ 'expiry' ] }],
-    });
-
-    this.LinkClick = LinkClick;
-    this.Message   = Message;
-    this.URL       = URL;
-    this.Visitor   = Visitor;
-    this.Word      = Word;
-
-    this.db.sync();
   }
 
   recordVisitor(ip) {
