@@ -13,7 +13,7 @@ export default class Msg {
   }
 
   getAll({ limit, reverse, since }) {
-    const where = {};
+    const where = { hidden: false };
 
     if (since != null) {
       where.createdAt = { [Op.gte]: since };
