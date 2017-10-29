@@ -46,7 +46,6 @@ dev.db-*
 /bin
 /dist
 /bcc32.com-v*.tar.gz
-/nginx.conf
 
 # SSL Key and Certificate
 server.key
@@ -55,7 +54,3 @@ server.pem
 # BuckleScript output
 /lib
 .merlin
-
-# WordPress private configuration
-/blag
-wp-config.php
