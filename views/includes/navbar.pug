@@ -1,4 +1,4 @@
-mixin nav-entry(url, text)
+mixin nav-entry(text, url)
   li(class={ active: currentUrl === url })
     a(href=url)
       = text
@@ -13,7 +13,7 @@ nav.navbar.navbar-default.navbar-fixed-top
       a.navbar-brand(href='/') bcc32
     div#navbar.collapse.navbar-collapse
       ul.nav.navbar-nav
-        +nav-entry('/'           , 'About Me')
-        +nav-entry('/blag'       , 'Blag')
-        +nav-entry('/message-log', 'Message Log')
-        +nav-entry('/u'          , 'URL Shortener')
+        +nav-entry('About Me'     , '/')
+        +nav-entry('Blag'         , 'https://blag.bcc32.com/')
+        +nav-entry('Message Log'  , '/message-log')
+        +nav-entry('URL Shortener', '/u')
