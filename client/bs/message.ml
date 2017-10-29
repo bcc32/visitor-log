@@ -9,13 +9,11 @@ end [@bs]
 type js_t = _js_t Js.t
 
 let of_js js =
-  Js.log js;
   { text      = js##message
   ; timestamp = js##createdAt }
 ;;
 
 let of_json json =
-  Js.log json;
   match json |> Js.Json.decodeObject with
   | None -> None
   | Some dict ->
