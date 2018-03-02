@@ -26,7 +26,14 @@ export default class UrlShortener {
 
     // Every hour, clean up expired URLs
     this.daemon = setInterval(() => {
-      this.cleanupExpired();
+      this.cleanupExpired()
+        .then((urls) => {
+          const numExpired = urls.length;
+          this.log.info('cleaned up %d expired URLs', numExpired);
+        })
+        .catch((e) => {
+          this.log.error('failed to cleanup expired URLs: %s', e);
+        });
     }, 3600 * 1000);
   }
 
@@ -50,10 +57,6 @@ export default class UrlShortener {
               urls.map(url => ({ word: url.shortUrl })),
               { transaction: t }
             );
-        })
-        .then((urls) => {
-          const numExpired = urls.length;
-          this.log.info('cleaned up %d expired URLs', numExpired);
         });
     });
   }
